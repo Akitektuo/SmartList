@@ -10,6 +10,7 @@ import static com.akitektuo.smartlist.util.Constant.KEY_AUTO_FILL_WANTED;
 import static com.akitektuo.smartlist.util.Constant.KEY_COLOR;
 import static com.akitektuo.smartlist.util.Constant.KEY_CREATED;
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
+import static com.akitektuo.smartlist.util.Constant.KEY_DESIGN;
 import static com.akitektuo.smartlist.util.Constant.KEY_INITIALIZE;
 import static com.akitektuo.smartlist.util.Constant.KEY_NIGHT;
 import static com.akitektuo.smartlist.util.Constant.KEY_RECOMMENDATIONS;
@@ -76,5 +77,6 @@ public class Preference {
         setPreference(KEY_STORAGE, STORAGE_INTERNAL);
         setPreference(KEY_NIGHT, false);
         setPreference(KEY_TOTAL, false);
+        setPreference(KEY_DESIGN, 0);
     }
 }

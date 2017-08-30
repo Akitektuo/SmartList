@@ -1,4 +1,4 @@
-package com.akitektuo.smartlist.activity;
+package com.akitektuo.smartlist.activity.material;
 
 import android.Manifest;
 import android.app.Activity;
@@ -464,7 +464,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 imageRecommendation.setImageDrawable(getResources().getDrawable(R.drawable.recommendation_green));
                 imageProducts.setImageDrawable(getResources().getDrawable(R.drawable.product_green));
                 imageFill.setImageDrawable(getResources().getDrawable(R.drawable.fill_green));
-                imageLimit.setImageDrawable(getResources().getDrawable(R.drawable.limit_green));
+                imageLimit.setImageDrawable(getResources().getDrawable(R.drawable.light_list_selected));
                 imageColor.setImageDrawable(getResources().getDrawable(R.drawable.color_green));
                 imageNight.setImageDrawable(getResources().getDrawable(R.drawable.night_green));
                 imageExcel.setImageDrawable(getResources().getDrawable(R.drawable.excel_green));

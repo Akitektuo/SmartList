@@ -1,4 +1,4 @@
-package com.akitektuo.smartlist.activity;
+package com.akitektuo.smartlist.activity.material;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,7 +20,6 @@ import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.ListAdapter;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.util.ListModel;
-import com.akitektuo.smartlist.util.Preference;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ import static com.akitektuo.smartlist.util.Constant.COLOR_ORANGE;
 import static com.akitektuo.smartlist.util.Constant.COLOR_RED;
 import static com.akitektuo.smartlist.util.Constant.COLOR_YELLOW;
 import static com.akitektuo.smartlist.util.Constant.KEY_COLOR;
-import static com.akitektuo.smartlist.util.Constant.KEY_CREATED;
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
 import static com.akitektuo.smartlist.util.Constant.KEY_NIGHT;
 import static com.akitektuo.smartlist.util.Constant.handler;
@@ -42,7 +40,7 @@ import static com.akitektuo.smartlist.util.Constant.totalCount;
 
 public class ListActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static DatabaseHelper database;
+    private DatabaseHelper database;
     private RecyclerView list;
     private TextView textResult;
     private RelativeLayout layoutHeader;
@@ -56,10 +54,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-        preference = new Preference(this);
-        if (!preference.getPreferenceBoolean(KEY_CREATED)) {
-            preference.setDefault();
-        }
         database = new DatabaseHelper(this);
         list = (RecyclerView) findViewById(R.id.list_main);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

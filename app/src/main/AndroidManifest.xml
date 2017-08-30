@@ -12,14 +12,18 @@
         android:roundIcon="@mipmap/icon"
         android:supportsRtl="true"
         android:theme="@style/Theme_Blue">
-        <activity android:name=".activity.ListActivity">
+        <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.SettingsActivity"/>
+        <activity android:name=".activity.material.SettingsActivity" />
+        <activity
+            android:name=".activity.light.MainActivity"
+            android:theme="@style/Theme_Light" />
+        <activity android:name=".activity.material.ListActivity" />
     </application>
 
 </manifest>
