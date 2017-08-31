@@ -158,7 +158,6 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
                         position = i;
                     } while (cursor.moveToNext());
                 }
-                //closing cursor
                 cursor.close();
                 if (preference.getPreferenceBoolean(KEY_TOTAL)) {
                     position += 2;

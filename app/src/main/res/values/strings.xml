@@ -29,4 +29,6 @@
     <string name="utilities">Utilities</string>
     <string name="personalization">Personalization</string>
     <string name="advanced_settings">Advanced Settings</string>
+    <string name="design">Change design</string>
+    <string name="design_status">Change to the other design theme\n(colors can be changed only with the material design)</string>
 </resources>

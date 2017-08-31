@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.akitektuo.smartlist.R;
+import com.akitektuo.smartlist.activity.light.MainActivity;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.kyleduo.switchbutton.SwitchButton;
 
@@ -67,6 +68,7 @@ import static com.akitektuo.smartlist.util.Constant.KEY_AUTO_FILL;
 import static com.akitektuo.smartlist.util.Constant.KEY_AUTO_FILL_WANTED;
 import static com.akitektuo.smartlist.util.Constant.KEY_COLOR;
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
+import static com.akitektuo.smartlist.util.Constant.KEY_DESIGN;
 import static com.akitektuo.smartlist.util.Constant.KEY_NIGHT;
 import static com.akitektuo.smartlist.util.Constant.KEY_RECOMMENDATIONS;
 import static com.akitektuo.smartlist.util.Constant.KEY_SMART_PRICE;
@@ -103,6 +105,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
     private TextView textExcel;
     private TextView textTotal;
     private TextView textStorage;
+    private TextView textDesign;
     private ImageView imageCurrency;
     private ImageView imageRecommendation;
     private ImageView imageProducts;
@@ -113,6 +116,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
     private ImageView imageExcel;
     private ImageView imageTotal;
     private ImageView imageStorage;
+    private ImageView imageDesign;
     private Drawable drawableInternal;
     private Drawable drawableExternal;
     private File path;
@@ -133,6 +137,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
         imageViews.add((ImageView) findViewById(R.id.image_settings_4));
         imageViews.add((ImageView) findViewById(R.id.image_settings_5));
         imageViews.add((ImageView) findViewById(R.id.image_settings_6));
+        imageViews.add((ImageView) findViewById(R.id.image_settings_7));
         textViews = new ArrayList<>();
         textViews.add((TextView) findViewById(R.id.text_settings_0));
         textViews.add((TextView) findViewById(R.id.text_settings_1));
@@ -144,6 +149,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
         textViews.add((TextView) findViewById(R.id.text_settings_7));
         textViews.add((TextView) findViewById(R.id.text_settings_8));
         textViews.add((TextView) findViewById(R.id.text_settings_9));
+        textViews.add((TextView) findViewById(R.id.text_settings_10));
         textHeaderUtilities = (TextView) findViewById(R.id.text_settings_utilities);
         textHeaderPersonalization = (TextView) findViewById(R.id.text_settings_personalization);
         textHeaderAdvanced = (TextView) findViewById(R.id.text_settings_advanced);
@@ -158,6 +164,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
         textStorage = (TextView) findViewById(R.id.text_settings_storage);
         textExcel = (TextView) findViewById(R.id.text_settings_excel);
         textTotal = (TextView) findViewById(R.id.text_settings_total);
+        textDesign = (TextView) findViewById(R.id.text_settings_design);
         imageCurrency = (ImageView) findViewById(R.id.image_settings_currency);
         imageRecommendation = (ImageView) findViewById(R.id.image_settings_recommendations);
         imageProducts = (ImageView) findViewById(R.id.image_settings_products);
@@ -168,6 +175,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
         imageStorage = (ImageView) findViewById(R.id.image_settings_storage);
         imageExcel = (ImageView) findViewById(R.id.image_settings_excel);
         imageTotal = (ImageView) findViewById(R.id.image_settings_total);
+        imageDesign = (ImageView) findViewById(R.id.image_settings_design);
         LinearLayout layoutColor = (LinearLayout) findViewById(R.id.layout_color);
         database = new DatabaseHelper(this);
         buttonBack.setOnClickListener(this);
@@ -189,6 +197,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
         switchTotal = (SwitchButton) findViewById(R.id.switch_settings_total);
         switchTotal.setChecked(preference.getPreferenceBoolean(KEY_TOTAL));
         switchTotal.setOnCheckedChangeListener(this);
+        findViewById(R.id.layout_design).setOnClickListener(this);
         refreshForColor(preference.getPreferenceString(KEY_COLOR));
         ActivityCompat.requestPermissions(SettingsActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
     }
@@ -399,6 +408,11 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
             case R.id.layout_excel:
                 exportToExcel(database.getList());
                 break;
+            case R.id.layout_design:
+                preference.setPreference(KEY_DESIGN, 1);
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+                break;
         }
     }
 
@@ -428,6 +442,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 imageNight.setImageDrawable(getResources().getDrawable(R.drawable.night_blue));
                 imageExcel.setImageDrawable(getResources().getDrawable(R.drawable.excel_blue));
                 imageTotal.setImageDrawable(getResources().getDrawable(R.drawable.total_blue));
+                imageDesign.setImageDrawable(getResources().getDrawable(R.drawable.design_blue));
                 drawableInternal = getResources().getDrawable(R.drawable.internal_storage_blue);
                 drawableExternal = getResources().getDrawable(R.drawable.external_storage_blue);
                 break;
@@ -442,6 +457,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 imageNight.setImageDrawable(getResources().getDrawable(R.drawable.night_yellow));
                 imageExcel.setImageDrawable(getResources().getDrawable(R.drawable.excel_yellow));
                 imageTotal.setImageDrawable(getResources().getDrawable(R.drawable.total_yellow));
+                imageDesign.setImageDrawable(getResources().getDrawable(R.drawable.design_yellow));
                 drawableInternal = getResources().getDrawable(R.drawable.internal_storage_yellow);
                 drawableExternal = getResources().getDrawable(R.drawable.external_storage_yellow);
                 break;
@@ -456,6 +472,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 imageNight.setImageDrawable(getResources().getDrawable(R.drawable.night_red));
                 imageExcel.setImageDrawable(getResources().getDrawable(R.drawable.excel_red));
                 imageTotal.setImageDrawable(getResources().getDrawable(R.drawable.total_red));
+                imageDesign.setImageDrawable(getResources().getDrawable(R.drawable.design_red));
                 drawableInternal = getResources().getDrawable(R.drawable.internal_storage_red);
                 drawableExternal = getResources().getDrawable(R.drawable.external_storage_red);
                 break;
@@ -465,11 +482,12 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 imageRecommendation.setImageDrawable(getResources().getDrawable(R.drawable.recommendation_green));
                 imageProducts.setImageDrawable(getResources().getDrawable(R.drawable.product_green));
                 imageFill.setImageDrawable(getResources().getDrawable(R.drawable.fill_green));
-                imageLimit.setImageDrawable(getResources().getDrawable(R.drawable.light_list_selected));
+                imageLimit.setImageDrawable(getResources().getDrawable(R.drawable.limit_green));
                 imageColor.setImageDrawable(getResources().getDrawable(R.drawable.color_green));
                 imageNight.setImageDrawable(getResources().getDrawable(R.drawable.night_green));
                 imageExcel.setImageDrawable(getResources().getDrawable(R.drawable.excel_green));
                 imageTotal.setImageDrawable(getResources().getDrawable(R.drawable.total_green));
+                imageDesign.setImageDrawable(getResources().getDrawable(R.drawable.design_green));
                 drawableInternal = getResources().getDrawable(R.drawable.internal_storage_green);
                 drawableExternal = getResources().getDrawable(R.drawable.external_storage_green);
                 break;
@@ -484,6 +502,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 imageNight.setImageDrawable(getResources().getDrawable(R.drawable.night_orange));
                 imageExcel.setImageDrawable(getResources().getDrawable(R.drawable.excel_orange));
                 imageTotal.setImageDrawable(getResources().getDrawable(R.drawable.total_orange));
+                imageDesign.setImageDrawable(getResources().getDrawable(R.drawable.design_orange));
                 drawableInternal = getResources().getDrawable(R.drawable.internal_storage_orange);
                 drawableExternal = getResources().getDrawable(R.drawable.external_storage_orange);
                 break;
@@ -498,6 +517,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 imageNight.setImageDrawable(getResources().getDrawable(R.drawable.night_black));
                 imageExcel.setImageDrawable(getResources().getDrawable(R.drawable.excel_black));
                 imageTotal.setImageDrawable(getResources().getDrawable(R.drawable.total_black));
+                imageDesign.setImageDrawable(getResources().getDrawable(R.drawable.design_black));
                 drawableInternal = getResources().getDrawable(R.drawable.internal_storage_black);
                 drawableExternal = getResources().getDrawable(R.drawable.external_storage_black);
                 break;
@@ -547,6 +567,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
         textStorage.setTextColor(getResources().getColor(colorPrimary));
         textExcel.setTextColor(getResources().getColor(colorPrimary));
         textTotal.setTextColor(getResources().getColor(colorPrimary));
+        textDesign.setTextColor(getResources().getColor(colorPrimary));
         switchRecommendations.setTintColor(getResources().getColor(colorPrimary));
         switchFill.setTintColor(getResources().getColor(colorPrimary));
         switchNight.setTintColor(getResources().getColor(colorPrimary));
