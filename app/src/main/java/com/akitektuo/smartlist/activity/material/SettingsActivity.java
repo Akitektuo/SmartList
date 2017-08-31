@@ -30,6 +30,7 @@ import com.kyleduo.switchbutton.SwitchButton;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -592,7 +593,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 if (preference.getPreferenceBoolean(KEY_TOTAL)) {
                     position += 2;
                     sheet.addCell(new Label(0, position, "Total"));
-                    sheet.addCell(new Label(1, position, String.valueOf(totalCount)));
+                    sheet.addCell(new Label(1, position, new DecimalFormat("0.#").format(totalCount)));
                 }
             } catch (WriteException e) {
                 e.printStackTrace();

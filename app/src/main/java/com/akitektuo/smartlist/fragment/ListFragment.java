@@ -11,12 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.LightListAdapter;
 import com.akitektuo.smartlist.database.DatabaseHelper;
-import com.akitektuo.smartlist.util.ListModel;
+import com.akitektuo.smartlist.model.ListModel;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -103,7 +102,6 @@ public class ListFragment extends Fragment implements View.OnClickListener {
                 totalCount = 0;
                 textResult.setText(getContext().getString(R.string.total_price, new DecimalFormat("0.#").format(totalCount), preference.getPreferenceString(KEY_CURRENCY)));
                 list.getAdapter().notifyDataSetChanged();
-                Toast.makeText(getContext(), "All items deleted.", Toast.LENGTH_SHORT).show();
             }
         });
         builderDelete.setNegativeButton("Cancel", null);

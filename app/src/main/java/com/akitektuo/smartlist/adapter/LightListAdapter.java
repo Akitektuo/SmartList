@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.database.DatabaseHelper;
-import com.akitektuo.smartlist.util.ListModel;
+import com.akitektuo.smartlist.model.ListModel;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;

@@ -1,7 +1,9 @@
 package com.akitektuo.smartlist.activity.light;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         tab.setupWithViewPager(pager);
         tab.addOnTabSelectedListener(this);
         setupTabIcons();
+
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
     }
 
     private void setupViewPager() {

@@ -29,8 +29,8 @@
         android:layout_below="@+id/layout_list_functions"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        android:paddingBottom="4dp"
-        android:paddingTop="4dp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
         android:scrollbars="none" />
 
     <LinearLayout
