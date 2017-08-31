@@ -14,8 +14,8 @@
         android:paddingTop="16dp">
 
         <ImageView
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/light_excel_export" />
 
         <LinearLayout
