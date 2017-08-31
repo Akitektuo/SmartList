@@ -63,9 +63,10 @@ public class ListFragment extends Fragment implements View.OnClickListener {
                 totalCount += Double.parseDouble(cursor.getString(1));
             } while (cursor.moveToNext());
         }
+        cursor.close();
         listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
         list.setAdapter(new LightListAdapter(getContext(), listModels, textResult));
-        list.smoothScrollToPosition(listModels.size());
+        list.smoothScrollToPosition(listModels.size() - 1);
         textResult.setText(getString(R.string.total_price, new DecimalFormat("0.#").format(totalCount), preference.getPreferenceString(KEY_CURRENCY)));
     }
 
