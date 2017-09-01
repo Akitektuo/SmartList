@@ -28,10 +28,8 @@ public class FolderFragment extends Fragment {
 
     private RecyclerView listExcel;
     private List<ExcelModel> excelModels;
-    private boolean created;
 
     public FolderFragment() {
-        created = false;
     }
 
     @Override
@@ -40,7 +38,6 @@ public class FolderFragment extends Fragment {
         listExcel = (RecyclerView) getActivity().findViewById(R.id.list_light_excel);
         excelModels = new ArrayList<>();
         populateList();
-        created = true;
     }
 
     @Override

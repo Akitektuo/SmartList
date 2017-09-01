@@ -55,7 +55,7 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
         holder.layout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                deleteFile(holder.getAdapterPosition());
+                openOptions(holder.getAdapterPosition());
                 return true;
             }
         });
@@ -80,6 +80,33 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
         dialogDelete.show();
     }
 
+    private void openOptions(final int position) {
+        AlertDialog.Builder builderCurrency = new AlertDialog.Builder(context);
+        builderCurrency.setTitle("Select action");
+        builderCurrency.setItems(R.array.actions, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i) {
+                    case 0:
+                        openFile(position);
+                        break;
+                    case 1:
+                        shareFile(position);
+                        break;
+                    case 2:
+                        deleteFile(position);
+                        break;
+                    case 3:
+                        showPath(position);
+                        break;
+                }
+            }
+        });
+        builderCurrency.setNeutralButton("Cancel", null);
+        AlertDialog alertDialogCurrency = builderCurrency.create();
+        alertDialogCurrency.show();
+    }
+
     @Override
     public int getItemCount() {
         return excelModels.size();
@@ -95,6 +122,23 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private void showPath(int position) {
+        AlertDialog.Builder builderDelete = new AlertDialog.Builder(context);
+        builderDelete.setTitle("Path for " + excelModels.get(position).getName());
+        builderDelete.setMessage(Environment.getExternalStorageDirectory() + File.separator + "SmartList");
+        builderDelete.setNegativeButton("Close", null);
+        AlertDialog dialogDelete = builderDelete.create();
+        dialogDelete.show();
+    }
+
+    private void shareFile(int position) {
+        Intent intentShareFile = new Intent(Intent.ACTION_SEND);
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "SmartList", excelModels.get(position).getName());
+        intentShareFile.setType("application/vnd.ms-excel");
+        intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        context.startActivity(Intent.createChooser(intentShareFile, "Share File"));
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

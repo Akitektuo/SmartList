@@ -23,4 +23,10 @@
         <item>Orange</item>
         <item>Black</item>
     </array>
+    <array name="actions">
+        <item>Open</item>
+        <item>Share</item>
+        <item>Delete</item>
+        <item>Path</item>
+    </array>
 </resources>
