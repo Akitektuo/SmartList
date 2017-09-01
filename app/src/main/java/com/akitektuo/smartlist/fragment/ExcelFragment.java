@@ -7,29 +7,22 @@ import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.akitektuo.smartlist.R;
-import com.akitektuo.smartlist.adapter.LightExcelAdapter;
+import com.akitektuo.smartlist.communicator.FileGenerationNotifier;
 import com.akitektuo.smartlist.database.DatabaseHelper;
-import com.akitektuo.smartlist.model.ExcelModel;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import jxl.Workbook;
@@ -49,9 +42,8 @@ import static com.akitektuo.smartlist.util.Constant.totalCount;
 
 public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
-    private RecyclerView listExcel;
-    private List<ExcelModel> excelModels;
     private DatabaseHelper database;
+    private FileGenerationNotifier notifier;
 
     public ExcelFragment() {
 
@@ -60,26 +52,12 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        listExcel = (RecyclerView) getActivity().findViewById(R.id.list_light_excel);
-        excelModels = new ArrayList<>();
         Switch switchExcel = (Switch) getActivity().findViewById(R.id.switch_light_excel);
         switchExcel.setChecked(preference.getPreferenceBoolean(KEY_TOTAL));
         switchExcel.setOnCheckedChangeListener(this);
         getActivity().findViewById(R.id.button_export_excel).setOnClickListener(this);
         database = new DatabaseHelper(getContext());
-        populateList();
-    }
-
-    private void populateList() {
-        scanItems();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setReverseLayout(true);
-        listExcel.setLayoutManager(layoutManager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(listExcel.getContext(),
-                layoutManager.getOrientation());
-        listExcel.addItemDecoration(dividerItemDecoration);
-        listExcel.setAdapter(new LightExcelAdapter(getContext(), excelModels));
-        goToLastItem();
+        notifier = (FileGenerationNotifier) getActivity();
     }
 
     @Override
@@ -94,23 +72,6 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
                 preference.setPreference(KEY_TOTAL, b);
                 break;
         }
-    }
-
-    private void scanItems() {
-        excelModels.clear();
-        File root = Environment.getExternalStorageDirectory();
-        File dir = new File(root + File.separator + "SmartList");
-        for (File f : dir.listFiles()) {
-            if (f.isFile()) {
-                excelModels.add(new ExcelModel(f.getName(), f.length()));
-            }
-        }
-        Collections.sort(excelModels, new Comparator<ExcelModel>() {
-            @Override
-            public int compare(ExcelModel o1, ExcelModel o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
     }
 
     @Override
@@ -177,12 +138,8 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
         } catch (IOException e) {
             e.printStackTrace();
         }
-        scanItems();
-        listExcel.getAdapter().notifyDataSetChanged();
-        goToLastItem();
+        Toast.makeText(getContext(), "Excel generated", Toast.LENGTH_SHORT).show();
+        notifier.change();
     }
 
-    private void goToLastItem() {
-        listExcel.smoothScrollToPosition(excelModels.size() - 1);
-    }
 }

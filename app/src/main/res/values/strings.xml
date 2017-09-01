@@ -16,7 +16,10 @@
     <string name="limit_status">Set the limit of the price that will be automatically filled</string>
     <string name="color">Color</string>
     <string name="color_status">Change the colors of Smart List or turn on/off night mode</string>
-    <string name="excel">Export Excel</string>
+    <string name="export">Export</string>
+    <string name="see_list">See List</string>
+    <string name="excel">Excel</string>
+    <string name="documents">Documents</string>
     <string name="excel_status">Exports the list as an Microsoft Excel Document in Internal Storage in the folder Smart List</string>
     <string name="fill_limit">Set the limit of Smart Fill</string>
     <string name="fill_aware">Higher limit means worse performance</string>
