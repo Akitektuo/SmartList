@@ -1,12 +1,13 @@
 package com.akitektuo.smartlist.activity.light;
 
 import android.Manifest;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.ViewPagerAdapter;
@@ -15,7 +16,7 @@ import com.akitektuo.smartlist.fragment.ListFragment;
 import com.akitektuo.smartlist.fragment.SettingsFragment;
 import com.akitektuo.smartlist.fragment.TuneFragment;
 
-public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
 
     private ViewPager pager;
     private TabLayout tab;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
+        hideKeyboard();
         switch (tab.getPosition()) {
             case 0:
                 tab.setIcon(R.drawable.light_list_selected);
@@ -93,8 +95,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     }
 
-    @Override
-    public void onClick(View view) {
-
+    private void hideKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
 }
