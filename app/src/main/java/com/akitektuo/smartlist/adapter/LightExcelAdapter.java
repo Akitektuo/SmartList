@@ -15,10 +15,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.akitektuo.smartlist.R;
+import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.model.ExcelModel;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.read.biff.BiffException;
 
 /**
  * Created by AoD Akitektuo on 22-Aug-17 at 19:27.
@@ -28,10 +38,12 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
 
     private List<ExcelModel> excelModels;
     private Context context;
+    private DatabaseHelper database;
 
     public LightExcelAdapter(Context context, List<ExcelModel> excelModels) {
         this.context = context;
         this.excelModels = excelModels;
+        database = new DatabaseHelper(context);
     }
 
     @Override
@@ -91,12 +103,15 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
                         openFile(position);
                         break;
                     case 1:
-                        shareFile(position);
+                        importFromExcel(position);
                         break;
                     case 2:
-                        deleteFile(position);
+                        shareFile(position);
                         break;
                     case 3:
+                        deleteFile(position);
+                        break;
+                    case 4:
                         showPath(position);
                         break;
                 }
@@ -139,6 +154,31 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
         intentShareFile.setType("application/vnd.ms-excel");
         intentShareFile.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
         context.startActivity(Intent.createChooser(intentShareFile, "Share File"));
+    }
+
+    private void importFromExcel(int position) {
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "SmartList", excelModels.get(position).getName());
+        WorkbookSettings wbSettings = new WorkbookSettings();
+        wbSettings.setLocale(new Locale("en", "EN"));
+        try {
+            Workbook workbook = Workbook.getWorkbook(file, wbSettings);
+            Sheet sheet = workbook.getSheet(0);
+            int length = sheet.getRows();
+            if (sheet.getCell(0, length - 1).getContents().equals("Total")) {
+                length -= 2;
+            }
+            boolean isDate = sheet.getColumns() == 3;
+            String date = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date());
+            for (int i = 1; i < length; i++) {
+                if (isDate) {
+                    date = sheet.getCell(2, i).getContents();
+                }
+                database.addList(database.getListNumberNew(), sheet.getCell(0, i).getContents(), sheet.getCell(1, i).getContents(), date);
+            }
+        } catch (IOException | BiffException e) {
+            e.printStackTrace();
+        }
+
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

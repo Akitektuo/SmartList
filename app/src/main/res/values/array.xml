@@ -25,6 +25,7 @@
     </array>
     <array name="actions">
         <item>Open</item>
+        <item>Import Data</item>
         <item>Share</item>
         <item>Delete</item>
         <item>Path</item>
