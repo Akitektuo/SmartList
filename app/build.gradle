@@ -4,11 +4,11 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
-        applicationId 'com.akitektuo.smartlist'
+        applicationId 'com.akitektuo.smartlistv1'
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 6
-        versionName "1.6.01092017"
+        versionCode 7
+        versionName "1.7.01092017"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
