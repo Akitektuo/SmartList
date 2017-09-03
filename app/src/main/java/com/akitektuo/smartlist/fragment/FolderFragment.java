@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.LightExcelAdapter;
@@ -28,6 +29,7 @@ public class FolderFragment extends Fragment {
 
     private RecyclerView listExcel;
     private List<ExcelModel> excelModels;
+    private TextView textNoFiles;
 
     public FolderFragment() {
     }
@@ -36,6 +38,7 @@ public class FolderFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         listExcel = (RecyclerView) getActivity().findViewById(R.id.list_light_excel);
+        textNoFiles = (TextView) getActivity().findViewById(R.id.text_light_no_files);
         excelModels = new ArrayList<>();
         populateList();
     }
@@ -60,23 +63,32 @@ public class FolderFragment extends Fragment {
         excelModels.clear();
         File root = Environment.getExternalStorageDirectory();
         File dir = new File(root + File.separator + "SmartList");
-        try {
-            for (File f : dir.listFiles()) {
-                if (f.isFile()) {
-                    excelModels.add(new ExcelModel(f.getName(), f.length()));
+        if (dir.listFiles().length > 0) {
+            try {
+                for (File f : dir.listFiles()) {
+                    if (f.isFile()) {
+                        excelModels.add(new ExcelModel(f.getName(), f.length()));
+                    }
                 }
-            }
-            Collections.sort(excelModels, new Comparator<ExcelModel>() {
-                @Override
-                public int compare(ExcelModel o1, ExcelModel o2) {
-                    return o2.getName().compareTo(o1.getName());
+                Collections.sort(excelModels, new Comparator<ExcelModel>() {
+                    @Override
+                    public int compare(ExcelModel o1, ExcelModel o2) {
+                        return o2.getName().compareTo(o1.getName());
+                    }
+                });
+                textNoFiles.setVisibility(View.GONE);
+                listExcel.setVisibility(View.VISIBLE);
+                if (listExcel.getAdapter() != null) {
+                    listExcel.getAdapter().notifyDataSetChanged();
                 }
-            });
-            if (listExcel.getAdapter() != null) {
-                listExcel.getAdapter().notifyDataSetChanged();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                textNoFiles.setVisibility(View.VISIBLE);
+                listExcel.setVisibility(View.GONE);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } else {
+            textNoFiles.setVisibility(View.VISIBLE);
+            listExcel.setVisibility(View.GONE);
         }
     }
 

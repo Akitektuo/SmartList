@@ -20,6 +20,16 @@
         android:clipToPadding="false"
         android:overScrollMode="never"
         android:padding="16dp"
-        android:scrollbars="none" />
+        android:scrollbars="none"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/text_light_no_files"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="64dp"
+        android:text="@string/no_files"
+        android:textColor="@color/colorLightSilver" />
 
 </LinearLayout>

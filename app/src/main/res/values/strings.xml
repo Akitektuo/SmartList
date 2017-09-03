@@ -35,4 +35,5 @@
     <string name="design">Change design</string>
     <string name="design_status">Change to the other design theme\n(Colors and night mode are active only with the material design)</string>
     <string name="limit_set">Limit will be set to:</string>
+    <string name="no_files">No files found\n\nAfter generating an Microsoft Excel Document you will be able to see it here</string>
 </resources>
