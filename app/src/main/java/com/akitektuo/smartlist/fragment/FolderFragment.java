@@ -63,30 +63,25 @@ public class FolderFragment extends Fragment {
         excelModels.clear();
         File root = Environment.getExternalStorageDirectory();
         File dir = new File(root + File.separator + "SmartList");
-        if (dir.listFiles().length > 0) {
-            try {
-                for (File f : dir.listFiles()) {
-                    if (f.isFile()) {
-                        excelModels.add(new ExcelModel(f.getName(), f.length()));
-                    }
+        try {
+            for (File f : dir.listFiles()) {
+                if (f.isFile()) {
+                    excelModels.add(new ExcelModel(f.getName(), f.length()));
                 }
-                Collections.sort(excelModels, new Comparator<ExcelModel>() {
-                    @Override
-                    public int compare(ExcelModel o1, ExcelModel o2) {
-                        return o2.getName().compareTo(o1.getName());
-                    }
-                });
-                textNoFiles.setVisibility(View.GONE);
-                listExcel.setVisibility(View.VISIBLE);
-                if (listExcel.getAdapter() != null) {
-                    listExcel.getAdapter().notifyDataSetChanged();
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                textNoFiles.setVisibility(View.VISIBLE);
-                listExcel.setVisibility(View.GONE);
             }
-        } else {
+            Collections.sort(excelModels, new Comparator<ExcelModel>() {
+                @Override
+                public int compare(ExcelModel o1, ExcelModel o2) {
+                    return o2.getName().compareTo(o1.getName());
+                }
+            });
+            textNoFiles.setVisibility(View.GONE);
+            listExcel.setVisibility(View.VISIBLE);
+            if (listExcel.getAdapter() != null) {
+                listExcel.getAdapter().notifyDataSetChanged();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
             textNoFiles.setVisibility(View.VISIBLE);
             listExcel.setVisibility(View.GONE);
         }
