@@ -68,7 +68,7 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         switch (compoundButton.getId()) {
-            case R.id.switch_settings_total:
+            case R.id.switch_light_excel:
                 preference.setPreference(KEY_TOTAL, b);
                 break;
         }
