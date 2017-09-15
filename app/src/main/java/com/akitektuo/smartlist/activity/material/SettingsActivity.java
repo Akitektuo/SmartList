@@ -8,11 +8,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -647,8 +647,10 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
     private void openGeneratedFile() {
         File file = new File(path + File.separator + "SmartList", "SmartList_" + new SimpleDateFormat("yyyy_MM_dd").format(new Date()) + ".xls");
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(file), "application/vnd.ms-excel");
+//        intent.setDataAndType(Uri.fromFile(file), "application/vnd.ms-excel");
+        intent.setDataAndType(FileProvider.getUriForFile(this, getPackageName() + ".com.akitektuo.smartlist", file), "application/vnd.ms-excel");
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -130,8 +131,10 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
     private void openFile(int position) {
         File file = new File(Environment.getExternalStorageDirectory() + File.separator + "SmartList", excelModels.get(position).getName());
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(file), "application/vnd.ms-excel");
+//        intent.setDataAndType(Uri.fromFile(file), "application/vnd.ms-excel");
+        intent.setDataAndType(FileProvider.getUriForFile(context, context.getPackageName() + ".com.akitektuo.smartlist", file), "application/vnd.ms-excel");
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
