@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.communicator.FileGenerationNotifier;
 import com.akitektuo.smartlist.database.DatabaseHelper;
+import com.akitektuo.smartlist.util.Preference;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,6 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
 import static com.akitektuo.smartlist.util.Constant.KEY_TOTAL;
-import static com.akitektuo.smartlist.util.Constant.preference;
 import static com.akitektuo.smartlist.util.Constant.totalCount;
 
 /**
@@ -45,6 +45,7 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
     private DatabaseHelper database;
     private FileGenerationNotifier notifier;
     private int layoutId;
+    private Preference preference;
 
     public ExcelFragment() {
         layoutId = R.layout.fragment_excel;
@@ -59,7 +60,8 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Switch switchExcel = (Switch) getActivity().findViewById(R.id.switch_light_excel);
+        preference = new Preference(getContext());
+        Switch switchExcel = getActivity().findViewById(R.id.switch_light_excel);
         switchExcel.setChecked(preference.getPreferenceBoolean(KEY_TOTAL));
         switchExcel.setOnCheckedChangeListener(this);
         getActivity().findViewById(R.id.button_export_excel).setOnClickListener(this);

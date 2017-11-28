@@ -16,6 +16,7 @@ import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.LightListAdapter;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.model.ListModel;
+import com.akitektuo.smartlist.util.Preference;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import java.util.List;
 
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
 import static com.akitektuo.smartlist.util.Constant.handler;
-import static com.akitektuo.smartlist.util.Constant.preference;
 import static com.akitektuo.smartlist.util.Constant.totalCount;
 
 /**
@@ -37,6 +37,7 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     private TextView textResult;
     private List<ListModel> listModels;
     private int layoutId;
+    private Preference preference;
 
     public ListFragment() {
         layoutId = R.layout.fragment_list;
@@ -52,11 +53,12 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         database = new DatabaseHelper(getContext());
-        list = (RecyclerView) getActivity().findViewById(R.id.list_light_main);
+        preference = new Preference(getContext());
+        list = getActivity().findViewById(R.id.list_light_main);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setStackFromEnd(true);
         list.setLayoutManager(linearLayoutManager);
-        textResult = (TextView) getActivity().findViewById(R.id.text_light_result);
+        textResult = getActivity().findViewById(R.id.text_light_result);
         listModels = new ArrayList<>();
         getActivity().findViewById(R.id.button_light_delete_all).setOnClickListener(this);
         totalCount = 0;

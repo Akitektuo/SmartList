@@ -11,7 +11,6 @@ import com.akitektuo.smartlist.util.Preference;
 
 import static com.akitektuo.smartlist.util.Constant.KEY_CREATED;
 import static com.akitektuo.smartlist.util.Constant.KEY_DESIGN;
-import static com.akitektuo.smartlist.util.Constant.preference;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -19,7 +18,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        preference = new Preference(this);
+        Preference preference = new Preference(this);
         if (!preference.getPreferenceBoolean(KEY_CREATED)) {
             preference.setDefault();
         }

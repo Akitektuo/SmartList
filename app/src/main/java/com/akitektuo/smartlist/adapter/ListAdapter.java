@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.model.ListModel;
+import com.akitektuo.smartlist.util.Preference;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -40,7 +41,6 @@ import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
 import static com.akitektuo.smartlist.util.Constant.KEY_NIGHT;
 import static com.akitektuo.smartlist.util.Constant.KEY_RECOMMENDATIONS;
 import static com.akitektuo.smartlist.util.Constant.handler;
-import static com.akitektuo.smartlist.util.Constant.preference;
 import static com.akitektuo.smartlist.util.Constant.totalCount;
 
 /**
@@ -53,9 +53,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private List<ListModel> listModels;
     private DatabaseHelper database;
     private TextView textTotal;
+    private Preference preference;
 
     public ListAdapter(Context context, List<ListModel> listModels, TextView textTotal) {
         this.context = context;
+        this.preference = new Preference(context);
         this.listModels = listModels;
         database = new DatabaseHelper(context);
         this.textTotal = textTotal;
@@ -263,12 +265,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         ViewHolder(View view) {
             super(view);
-            textNumber = (TextView) view.findViewById(R.id.text_item_number);
-            editValue = (EditText) view.findViewById(R.id.edit_item_value);
-            textCurrency = (TextView) view.findViewById(R.id.text_item_currency);
-            editAutoProduct = (AutoCompleteTextView) view.findViewById(R.id.edit_auto_item_product);
-            buttonDelete = (Button) view.findViewById(R.id.button_delete);
-            buttonSave = (Button) view.findViewById(R.id.button_save);
+            textNumber = view.findViewById(R.id.text_item_number);
+            editValue = view.findViewById(R.id.edit_item_value);
+            textCurrency = view.findViewById(R.id.text_item_currency);
+            editAutoProduct = view.findViewById(R.id.edit_auto_item_product);
+            buttonDelete = view.findViewById(R.id.button_delete);
+            buttonSave = view.findViewById(R.id.button_save);
             switch (preference.getPreferenceString(KEY_COLOR)) {
                 case COLOR_BLUE:
                     textNumber.setTextColor(context.getResources().getColor(R.color.colorPrimaryBlue));

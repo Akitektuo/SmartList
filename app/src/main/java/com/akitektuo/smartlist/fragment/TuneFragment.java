@@ -11,6 +11,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.akitektuo.smartlist.R;
+import com.akitektuo.smartlist.util.Preference;
 
 import static com.akitektuo.smartlist.util.Constant.CURRENCY_AED;
 import static com.akitektuo.smartlist.util.Constant.CURRENCY_AUD;
@@ -29,7 +30,6 @@ import static com.akitektuo.smartlist.util.Constant.KEY_AUTO_FILL;
 import static com.akitektuo.smartlist.util.Constant.KEY_AUTO_FILL_WANTED;
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
 import static com.akitektuo.smartlist.util.Constant.KEY_RECOMMENDATIONS;
-import static com.akitektuo.smartlist.util.Constant.preference;
 
 /**
  * Created by AoD Akitektuo on 30-Aug-17 at 21:13.
@@ -40,6 +40,7 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
     private Switch switchRecommendations;
     private Switch switchFill;
     private int layoutId;
+    private Preference preference;
 
     public TuneFragment() {
         layoutId = R.layout.fragment_tune;
@@ -54,8 +55,10 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        switchRecommendations = (Switch) getActivity().findViewById(R.id.switch_light_recommendations);
-        switchFill = (Switch) getActivity().findViewById(R.id.switch_light_fill);
+        preference = new Preference(getContext());
+
+        switchRecommendations = getActivity().findViewById(R.id.switch_light_recommendations);
+        switchFill = getActivity().findViewById(R.id.switch_light_fill);
 
         switchRecommendations.setChecked(preference.getPreferenceBoolean(KEY_RECOMMENDATIONS));
         switchFill.setChecked(preference.getPreferenceBoolean(KEY_AUTO_FILL));

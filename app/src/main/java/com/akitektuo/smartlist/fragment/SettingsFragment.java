@@ -17,13 +17,13 @@ import android.widget.SeekBar;
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.activity.material.ListActivity;
 import com.akitektuo.smartlist.database.DatabaseHelper;
+import com.akitektuo.smartlist.util.Preference;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.akitektuo.smartlist.util.Constant.KEY_DESIGN;
 import static com.akitektuo.smartlist.util.Constant.KEY_SMART_PRICE;
-import static com.akitektuo.smartlist.util.Constant.preference;
 
 /**
  * Created by AoD Akitektuo on 30-Aug-17 at 21:13.
@@ -33,6 +33,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     private DatabaseHelper database;
     private int layoutId;
+    private Preference preference;
 
     public SettingsFragment() {
         layoutId = R.layout.fragment_settings;
@@ -47,6 +48,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        preference = new Preference(getContext());
 
         getActivity().findViewById(R.id.layout_light_products).setOnClickListener(this);
         getActivity().findViewById(R.id.layout_light_limit).setOnClickListener(this);
@@ -109,8 +111,8 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
     private void setLimit() {
         AlertDialog.Builder builderFill = new AlertDialog.Builder(getContext());
         View viewDialog = LayoutInflater.from(getContext()).inflate(R.layout.dialog_light_fill, null);
-        final EditText editLimit = (EditText) viewDialog.findViewById(R.id.edit_dialog_light_limit);
-        final SeekBar barLimit = (SeekBar) viewDialog.findViewById(R.id.bar_light_limit);
+        final EditText editLimit = viewDialog.findViewById(R.id.edit_dialog_light_limit);
+        final SeekBar barLimit = viewDialog.findViewById(R.id.bar_light_limit);
         barLimit.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {

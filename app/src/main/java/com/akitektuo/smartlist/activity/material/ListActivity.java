@@ -20,6 +20,7 @@ import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.ListAdapter;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.model.ListModel;
+import com.akitektuo.smartlist.util.Preference;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -35,7 +36,6 @@ import static com.akitektuo.smartlist.util.Constant.KEY_COLOR;
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
 import static com.akitektuo.smartlist.util.Constant.KEY_NIGHT;
 import static com.akitektuo.smartlist.util.Constant.handler;
-import static com.akitektuo.smartlist.util.Constant.preference;
 import static com.akitektuo.smartlist.util.Constant.totalCount;
 
 public class ListActivity extends AppCompatActivity implements View.OnClickListener {
@@ -49,22 +49,24 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     private TextView textTitle;
     private Button buttonSettings;
     private Button buttonDelete;
+    private Preference preference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         database = new DatabaseHelper(this);
-        list = (RecyclerView) findViewById(R.id.list_main);
+        preference = new Preference(this);
+        list = findViewById(R.id.list_main);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
         list.setLayoutManager(linearLayoutManager);
-        textResult = (TextView) findViewById(R.id.text_result);
-        layoutHeader = (RelativeLayout) findViewById(R.id.layout_list_header);
-        layoutMain = (RelativeLayout) findViewById(R.id.layout_main);
-        textTitle = (TextView) findViewById(R.id.text_title_main);
-        buttonSettings = (Button) findViewById(R.id.button_settings);
-        buttonDelete = (Button) findViewById(R.id.button_delete_all);
+        textResult = findViewById(R.id.text_result);
+        layoutHeader = findViewById(R.id.layout_list_header);
+        layoutMain = findViewById(R.id.layout_main);
+        textTitle = findViewById(R.id.text_title_main);
+        buttonSettings = findViewById(R.id.button_settings);
+        buttonDelete = findViewById(R.id.button_delete_all);
         buttonSettings.setOnClickListener(this);
         buttonDelete.setOnClickListener(this);
         refreshForColor(preference.getPreferenceString(KEY_COLOR));
