@@ -39,9 +39,16 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
 
     private Switch switchRecommendations;
     private Switch switchFill;
+    private int layoutId;
 
     public TuneFragment() {
+        layoutId = R.layout.fragment_tune;
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("layout_id", layoutId);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -61,7 +68,10 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_tune, container, false);
+        if (savedInstanceState != null) {
+            layoutId = savedInstanceState.getInt("layout_id");
+        }
+        return inflater.inflate(layoutId, container, false);
     }
 
     @Override

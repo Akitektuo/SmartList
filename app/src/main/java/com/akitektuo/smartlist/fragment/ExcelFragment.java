@@ -44,9 +44,16 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
 
     private DatabaseHelper database;
     private FileGenerationNotifier notifier;
+    private int layoutId;
 
     public ExcelFragment() {
+        layoutId = R.layout.fragment_excel;
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("layout_id", layoutId);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -62,7 +69,10 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_excel, container, false);
+        if (savedInstanceState != null) {
+            layoutId = savedInstanceState.getInt("layout_id");
+        }
+        return inflater.inflate(layoutId, container, false);
     }
 
     @Override

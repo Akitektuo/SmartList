@@ -30,8 +30,16 @@ public class FolderFragment extends Fragment {
     private RecyclerView listExcel;
     private List<ExcelModel> excelModels;
     private TextView textNoFiles;
+    private int layoutId;
 
     public FolderFragment() {
+        layoutId = R.layout.fragment_folder;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("layout_id", layoutId);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -45,7 +53,10 @@ public class FolderFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_folder, container, false);
+        if (savedInstanceState != null) {
+            layoutId = savedInstanceState.getInt("layout_id");
+        }
+        return inflater.inflate(layoutId, container, false);
     }
 
     public void populateList() {

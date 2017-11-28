@@ -32,9 +32,16 @@ import static com.akitektuo.smartlist.util.Constant.preference;
 public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     private DatabaseHelper database;
+    private int layoutId;
 
     public SettingsFragment() {
+        layoutId = R.layout.fragment_settings;
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("layout_id", layoutId);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -50,7 +57,10 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_settings, container, false);
+        if (savedInstanceState != null) {
+            layoutId = savedInstanceState.getInt("layout_id");
+        }
+        return inflater.inflate(layoutId, container, false);
     }
 
     @Override

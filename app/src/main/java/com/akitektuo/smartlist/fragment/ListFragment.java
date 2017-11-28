@@ -36,8 +36,16 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     private RecyclerView list;
     private TextView textResult;
     private List<ListModel> listModels;
+    private int layoutId;
 
     public ListFragment() {
+        layoutId = R.layout.fragment_list;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("layout_id", layoutId);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -72,7 +80,10 @@ public class ListFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list, container, false);
+        if (savedInstanceState != null) {
+            layoutId = savedInstanceState.getInt("layout_id");
+        }
+        return inflater.inflate(layoutId, container, false);
     }
 
     @Override
