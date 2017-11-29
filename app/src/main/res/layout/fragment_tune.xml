@@ -28,6 +28,7 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/layout_light_tune_recommendations"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp">
@@ -76,6 +77,7 @@
                 android:background="@color/colorLightSilverLight" />
 
             <RelativeLayout
+                android:id="@+id/layout_light_tune_fill"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp">

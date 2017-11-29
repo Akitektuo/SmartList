@@ -66,6 +66,8 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
         switchRecommendations.setOnCheckedChangeListener(this);
         switchFill.setOnCheckedChangeListener(this);
 
+        getActivity().findViewById(R.id.layout_light_tune_recommendations).setOnClickListener(this);
+        getActivity().findViewById(R.id.layout_light_tune_fill).setOnClickListener(this);
         getActivity().findViewById(R.id.layout_light_currency).setOnClickListener(this);
     }
 
@@ -110,6 +112,12 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
         switch (view.getId()) {
             case R.id.layout_light_currency:
                 changeCurrency();
+                break;
+            case R.id.layout_light_tune_recommendations:
+                switchRecommendations.setChecked(!switchRecommendations.isChecked());
+                break;
+            case R.id.layout_light_tune_fill:
+                switchFill.setChecked(!switchFill.isChecked());
                 break;
         }
     }

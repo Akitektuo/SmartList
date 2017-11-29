@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,8 +46,8 @@ public class FolderFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        listExcel = (RecyclerView) getActivity().findViewById(R.id.list_light_excel);
-        textNoFiles = (TextView) getActivity().findViewById(R.id.text_light_no_files);
+        listExcel = getActivity().findViewById(R.id.list_light_excel);
+        textNoFiles = getActivity().findViewById(R.id.text_light_no_files);
         excelModels = new ArrayList<>();
         populateList();
     }
@@ -79,13 +80,13 @@ public class FolderFragment extends Fragment {
                 if (dir.listFiles().length > 0) {
                     for (File f : dir.listFiles()) {
                         if (f.isFile()) {
-                            excelModels.add(new ExcelModel(f.getName(), f.length()));
+                            excelModels.add(new ExcelModel(f.getName(), f.length(), new Date(f.lastModified())));
                         }
                     }
                     Collections.sort(excelModels, new Comparator<ExcelModel>() {
                         @Override
                         public int compare(ExcelModel o1, ExcelModel o2) {
-                            return o2.getName().compareTo(o1.getName());
+                            return o2.getDate().compareTo(o1.getDate());
                         }
                     });
                     textNoFiles.setVisibility(View.GONE);

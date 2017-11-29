@@ -44,6 +44,7 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
 
     private DatabaseHelper database;
     private FileGenerationNotifier notifier;
+    private Switch switchExcel;
     private int layoutId;
     private Preference preference;
 
@@ -61,10 +62,11 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         preference = new Preference(getContext());
-        Switch switchExcel = getActivity().findViewById(R.id.switch_light_excel);
+        switchExcel = getActivity().findViewById(R.id.switch_light_excel);
         switchExcel.setChecked(preference.getPreferenceBoolean(KEY_TOTAL));
         switchExcel.setOnCheckedChangeListener(this);
         getActivity().findViewById(R.id.button_export_excel).setOnClickListener(this);
+        getActivity().findViewById(R.id.layout_light_excel_total).setOnClickListener(this);
         database = new DatabaseHelper(getContext());
         notifier = (FileGenerationNotifier) getActivity();
     }
@@ -91,6 +93,9 @@ public class ExcelFragment extends Fragment implements CompoundButton.OnCheckedC
         switch (view.getId()) {
             case R.id.button_export_excel:
                 exportToExcel(database.getList());
+                break;
+            case R.id.layout_light_excel_total:
+                switchExcel.setChecked(!switchExcel.isChecked());
                 break;
         }
     }

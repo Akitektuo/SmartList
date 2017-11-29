@@ -43,6 +43,7 @@
                 android:background="@color/colorLightSilverLight" />
 
             <RelativeLayout
+                android:id="@+id/layout_light_excel_total"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp">
@@ -83,16 +84,16 @@
 
             </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/button_export_excel"
-                    android:layout_width="128dp"
-                    android:layout_height="32dp"
-                    android:background="@drawable/corners_light"
-                    android:gravity="center"
-                    android:text="@string/export"
-                    android:textAllCaps="false"
-                    android:textColor="@color/background"
-                    android:textSize="16sp" />
+            <TextView
+                android:id="@+id/button_export_excel"
+                android:layout_width="128dp"
+                android:layout_height="32dp"
+                android:background="@drawable/corners_light"
+                android:gravity="center"
+                android:text="@string/export"
+                android:textAllCaps="false"
+                android:textColor="@color/background"
+                android:textSize="16sp" />
 
         </LinearLayout>
 
