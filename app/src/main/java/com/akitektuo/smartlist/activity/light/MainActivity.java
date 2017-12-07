@@ -12,7 +12,6 @@ import android.view.inputmethod.InputMethodManager;
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.ViewPagerAdapter;
 import com.akitektuo.smartlist.communicator.FileGenerationNotifier;
-import com.akitektuo.smartlist.fragment.ExcelFragment;
 import com.akitektuo.smartlist.fragment.FolderFragment;
 import com.akitektuo.smartlist.fragment.ListFragment;
 import com.akitektuo.smartlist.fragment.SettingsFragment;
@@ -29,10 +28,10 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        pager = (ViewPager) findViewById(R.id.container_main);
+        pager = findViewById(R.id.container_main);
         setupViewPager();
 
-        tab = (TabLayout) findViewById(R.id.tab_main);
+        tab = findViewById(R.id.tab_main);
         tab.setupWithViewPager(pager);
         tab.addOnTabSelectedListener(this);
         setupTabIcons();
@@ -43,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     private void setupViewPager() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new ListFragment());
-        adapter.addFragment(new ExcelFragment());
         folderFragment = new FolderFragment();
         adapter.addFragment(folderFragment);
         adapter.addFragment(new TuneFragment());
@@ -53,10 +51,9 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     private void setupTabIcons() {
         tab.getTabAt(0).setIcon(R.drawable.light_list_selected);
-        tab.getTabAt(1).setIcon(R.drawable.light_excel);
-        tab.getTabAt(2).setIcon(R.drawable.light_folder);
-        tab.getTabAt(3).setIcon(R.drawable.light_tune);
-        tab.getTabAt(4).setIcon(R.drawable.light_settings);
+        tab.getTabAt(1).setIcon(R.drawable.light_folder);
+        tab.getTabAt(2).setIcon(R.drawable.light_tune);
+        tab.getTabAt(3).setIcon(R.drawable.light_settings);
     }
 
     @Override
@@ -67,15 +64,12 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 tab.setIcon(R.drawable.light_list_selected);
                 break;
             case 1:
-                tab.setIcon(R.drawable.light_excel_selected);
-                break;
-            case 2:
                 tab.setIcon(R.drawable.light_folder_selected);
                 break;
-            case 3:
+            case 2:
                 tab.setIcon(R.drawable.light_tune_selected);
                 break;
-            case 4:
+            case 3:
                 tab.setIcon(R.drawable.light_settings_selected);
                 break;
         }
@@ -88,15 +82,12 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 tab.setIcon(R.drawable.light_list);
                 break;
             case 1:
-                tab.setIcon(R.drawable.light_excel);
-                break;
-            case 2:
                 tab.setIcon(R.drawable.light_folder);
                 break;
-            case 3:
+            case 2:
                 tab.setIcon(R.drawable.light_tune);
                 break;
-            case 4:
+            case 3:
                 tab.setIcon(R.drawable.light_settings);
                 break;
         }
@@ -117,5 +108,6 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     @Override
     public void change() {
         folderFragment.scanItems();
+        tab.getTabAt(1).select();
     }
 }

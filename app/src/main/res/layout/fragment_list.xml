@@ -14,9 +14,19 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/button_light_excel_generate"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/light_excel_generate" />
+
+        <Button
             android:id="@+id/button_light_delete_all"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:background="@drawable/light_delete_all" />
 
     </LinearLayout>

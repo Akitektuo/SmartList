@@ -1,8 +1,13 @@
 package com.akitektuo.smartlist.fragment;
 
+import android.Manifest;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,19 +15,36 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.LightListAdapter;
+import com.akitektuo.smartlist.communicator.FileGenerationNotifier;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.model.ListModel;
 import com.akitektuo.smartlist.util.Preference;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
 
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
+import static com.akitektuo.smartlist.util.Constant.KEY_TOTAL;
 import static com.akitektuo.smartlist.util.Constant.handler;
 import static com.akitektuo.smartlist.util.Constant.totalCount;
 
@@ -30,7 +52,7 @@ import static com.akitektuo.smartlist.util.Constant.totalCount;
  * Created by AoD Akitektuo on 30-Aug-17 at 21:13.
  */
 
-public class ListFragment extends Fragment implements View.OnClickListener {
+public class ListFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private DatabaseHelper database;
     private RecyclerView list;
@@ -38,6 +60,9 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     private List<ListModel> listModels;
     private int layoutId;
     private Preference preference;
+    private Dialog dialogGenerateExcel;
+    private FileGenerationNotifier notifier;
+    private Switch switchExcel;
 
     public ListFragment() {
         layoutId = R.layout.fragment_list;
@@ -61,8 +86,17 @@ public class ListFragment extends Fragment implements View.OnClickListener {
         textResult = getActivity().findViewById(R.id.text_light_result);
         listModels = new ArrayList<>();
         getActivity().findViewById(R.id.button_light_delete_all).setOnClickListener(this);
+        getActivity().findViewById(R.id.button_light_excel_generate).setOnClickListener(this);
         totalCount = 0;
         populateList();
+        dialogGenerateExcel = new Dialog(getContext());
+        dialogGenerateExcel.setContentView(R.layout.dialog_light_excel_generate);
+        dialogGenerateExcel.findViewById(R.id.button_dialog_export_excel).setOnClickListener(this);
+        dialogGenerateExcel.findViewById(R.id.layout_dialog_light_excel_total).setOnClickListener(this);
+        switchExcel = dialogGenerateExcel.findViewById(R.id.switch_dialog_light_excel);
+        switchExcel.setChecked(preference.getPreferenceBoolean(KEY_TOTAL));
+        switchExcel.setOnCheckedChangeListener(this);
+        notifier = (FileGenerationNotifier) getActivity();
     }
 
     private void populateList() {
@@ -94,6 +128,16 @@ public class ListFragment extends Fragment implements View.OnClickListener {
             case R.id.button_light_delete_all:
                 deleteAllItems();
                 break;
+            case R.id.button_light_excel_generate:
+                dialogGenerateExcel.show();
+                break;
+            case R.id.button_dialog_export_excel:
+                exportToExcel(database.getList());
+                dialogGenerateExcel.dismiss();
+                break;
+            case R.id.layout_dialog_light_excel_total:
+                switchExcel.setChecked(!switchExcel.isChecked());
+                break;
         }
     }
 
@@ -121,5 +165,73 @@ public class ListFragment extends Fragment implements View.OnClickListener {
         builderDelete.setNegativeButton("Cancel", null);
         AlertDialog dialogDelete = builderDelete.create();
         dialogDelete.show();
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        switch (compoundButton.getId()) {
+            case R.id.switch_dialog_light_excel:
+                preference.setPreference(KEY_TOTAL, b);
+                break;
+        }
+    }
+
+    private void exportToExcel(Cursor cursor) {
+        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "SmartList", "SmartList_" + new SimpleDateFormat("yyyy_MM_dd", Locale.getDefault()).format(new Date()) + ".xls");
+        if (!file.exists()) {
+            if (file.getParentFile().mkdirs()) {
+                Snackbar.make(getActivity().findViewById(R.id.layout_fragment_excel), "Please check the permissions", Snackbar.LENGTH_LONG).setAction("Permissions", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+                    }
+                }).show();
+            }
+        }
+
+        WorkbookSettings wbSettings = new WorkbookSettings();
+        wbSettings.setLocale(new Locale("en", "EN"));
+        WritableWorkbook workbook;
+
+        try {
+            workbook = Workbook.createWorkbook(file, wbSettings);
+            //Excel sheet name. 0 represents first sheet
+            WritableSheet sheet = workbook.createSheet("NewList", 0);
+
+            try {
+                int position = 0;
+                sheet.addCell(new Label(0, 0, "Price")); // column and row
+                sheet.addCell(new Label(1, 0, "Product"));
+                sheet.addCell(new Label(2, 0, "Time added"));
+                if (cursor.moveToFirst()) {
+                    do {
+                        int i = cursor.getPosition() + 1;
+                        sheet.addCell(new Label(0, i, cursor.getString(1)));
+                        sheet.addCell(new Label(1, i, cursor.getString(2)));
+                        sheet.addCell(new Label(2, i, cursor.getString(3)));
+                        position = i;
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+                if (preference.getPreferenceBoolean(KEY_TOTAL)) {
+                    position += 2;
+                    sheet.addCell(new Label(0, position, "Total"));
+                    sheet.addCell(new Label(1, position, new DecimalFormat("0.#").format(totalCount)));
+                }
+            } catch (WriteException e) {
+                e.printStackTrace();
+            }
+            workbook.write();
+            try {
+                workbook.close();
+            } catch (WriteException e) {
+                e.printStackTrace();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Toast.makeText(getContext(), "Excel generated", Toast.LENGTH_SHORT).show();
+        notifier.change();
     }
 }
