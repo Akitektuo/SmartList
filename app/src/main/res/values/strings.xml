@@ -16,6 +16,7 @@
     <string name="limit_status">Set the limit of the price that will be automatically filled</string>
     <string name="color">Color</string>
     <string name="color_status">Change the colors of Smart List or turn on/off night mode</string>
+    <string name="generate_excel">Generate excel</string>
     <string name="export">Export</string>
     <string name="see_list">See List</string>
     <string name="excel">Excel</string>

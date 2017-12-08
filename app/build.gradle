@@ -7,8 +7,8 @@ android {
         applicationId 'com.akitektuo.smartlist'
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 12
-        versionName "1.12.30112017"
+        versionCode 13
+        versionName "1.13.07122017"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

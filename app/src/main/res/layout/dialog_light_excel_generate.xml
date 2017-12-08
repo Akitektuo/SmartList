@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/excel"
+        android:text="@string/generate_excel"
         android:textColor="@color/colorLightBlack"
         android:textSize="20sp"
         android:textStyle="bold" />

@@ -169,16 +169,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void addProduct(String product, String price) {
         int roundedPrice = (int) Math.ceil(Double.parseDouble(price));
-        int[] pricesGenerate = new int[PRICE_LIMIT];
-        String stringBuilder = "";
-        for (int i = 0; i < pricesGenerate.length; i++) {
-            pricesGenerate[i] = 0;
-            if (i == roundedPrice) {
-                pricesGenerate[i]++;
+        if (roundedPrice > 0) {
+            int[] pricesGenerate = new int[PRICE_LIMIT];
+            String stringBuilder = "";
+            for (int i = 0; i < pricesGenerate.length; i++) {
+                pricesGenerate[i] = 0;
+                if (i == roundedPrice) {
+                    pricesGenerate[i]++;
+                }
+                stringBuilder = stringBuilder + new DecimalFormat("0.#").format(pricesGenerate[i]) + "_";
             }
-            stringBuilder = stringBuilder + new DecimalFormat("0.#").format(pricesGenerate[i]) + "_";
+            addUsage(product, stringBuilder.substring(0, stringBuilder.length() - 1));
         }
-        addUsage(product, stringBuilder.substring(0, stringBuilder.length() - 1));
     }
 
     public void updatePrices(final String products, final String price) {
@@ -192,7 +194,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         int[] pricesExisting = new int[preference.getPreferenceInt(KEY_SMART_PRICE)];
                         for (int i = 0; i < pricesExisting.length; i++) {
                             pricesExisting[i] = Integer.parseInt(pricesRaw[i]);
-                            if (pricesExisting[i] == roundedPrice) {
+                            if (i == roundedPrice) {
                                 pricesExisting[i]++;
                             }
                             stringBuilder = stringBuilder + pricesExisting[i] + "_";

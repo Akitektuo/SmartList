@@ -329,7 +329,7 @@
                         android:id="@+id/text_settings_excel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/export"
+                        android:text="@string/generate_excel"
                         android:textColor="@color/colorPrimaryBlue"
                         android:textSize="18sp"
                         android:textStyle="bold" />
