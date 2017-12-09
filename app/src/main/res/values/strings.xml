@@ -37,4 +37,8 @@
     <string name="design_status">Change to the other design theme\n(Colors and night mode are active only with the material design)</string>
     <string name="limit_set">Limit will be set to:</string>
     <string name="no_files">No files found\n\nAfter generating an Microsoft Excel Document you will be able to see it here</string>
+    <string name="set_offset">Set offset</string>
+    <string name="offset_description">Offset is used to make a secondary total adding the given value</string>
+    <string name="offset">Offset:</string>
+    <string name="total_price_with_offset">Total with offset: %1$s %2$s</string>
 </resources>

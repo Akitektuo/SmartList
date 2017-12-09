@@ -49,7 +49,7 @@ public class Constant {
     public static final String KEY_STORAGE = "storage";
     public static final String KEY_TOTAL = "total";
     public static final String KEY_DESIGN = "design";
-
-    public static double totalCount;
+    public static final String KEY_TOTAL_COUNT = "total_count";
+    public static final String KEY_OFFSET = "offset";
 
 }

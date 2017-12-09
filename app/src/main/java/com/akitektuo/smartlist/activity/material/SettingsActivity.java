@@ -75,10 +75,10 @@ import static com.akitektuo.smartlist.util.Constant.KEY_RECOMMENDATIONS;
 import static com.akitektuo.smartlist.util.Constant.KEY_SMART_PRICE;
 import static com.akitektuo.smartlist.util.Constant.KEY_STORAGE;
 import static com.akitektuo.smartlist.util.Constant.KEY_TOTAL;
+import static com.akitektuo.smartlist.util.Constant.KEY_TOTAL_COUNT;
 import static com.akitektuo.smartlist.util.Constant.PRICE_LIMIT;
 import static com.akitektuo.smartlist.util.Constant.STORAGE_EXTERNAL;
 import static com.akitektuo.smartlist.util.Constant.STORAGE_INTERNAL;
-import static com.akitektuo.smartlist.util.Constant.totalCount;
 
 public class SettingsActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
@@ -616,7 +616,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 if (preference.getPreferenceBoolean(KEY_TOTAL)) {
                     position += 2;
                     sheet.addCell(new Label(0, position, "Total"));
-                    sheet.addCell(new Label(1, position, new DecimalFormat("0.#").format(totalCount)));
+                    sheet.addCell(new Label(1, position, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT))));
                 }
             } catch (WriteException e) {
                 e.printStackTrace();

@@ -12,10 +12,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,9 +47,10 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
+import static com.akitektuo.smartlist.util.Constant.KEY_OFFSET;
 import static com.akitektuo.smartlist.util.Constant.KEY_TOTAL;
+import static com.akitektuo.smartlist.util.Constant.KEY_TOTAL_COUNT;
 import static com.akitektuo.smartlist.util.Constant.handler;
-import static com.akitektuo.smartlist.util.Constant.totalCount;
 
 /**
  * Created by AoD Akitektuo on 30-Aug-17 at 21:13.
@@ -63,6 +67,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
     private Dialog dialogGenerateExcel;
     private FileGenerationNotifier notifier;
     private Switch switchExcel;
+    private AlertDialog.Builder builderOffset;
 
     public ListFragment() {
         layoutId = R.layout.fragment_list;
@@ -87,7 +92,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         listModels = new ArrayList<>();
         getActivity().findViewById(R.id.button_light_delete_all).setOnClickListener(this);
         getActivity().findViewById(R.id.button_light_excel_generate).setOnClickListener(this);
-        totalCount = 0;
+        getActivity().findViewById(R.id.layout_list_total).setOnClickListener(this);
         populateList();
         dialogGenerateExcel = new Dialog(getContext());
         dialogGenerateExcel.setContentView(R.layout.dialog_light_excel_generate);
@@ -101,6 +106,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
 
     private void populateList() {
         Cursor cursor = database.getList();
+        double totalCount = 0;
         if (cursor.moveToFirst()) {
             do {
                 listModels.add(new ListModel(cursor.getInt(0), cursor.getString(1), preference.getPreferenceString(KEY_CURRENCY), cursor.getString(2), 1));
@@ -112,6 +118,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         list.setAdapter(new LightListAdapter(getContext(), listModels, textResult));
         list.smoothScrollToPosition(listModels.size() - 1);
         textResult.setText(getString(R.string.total_price, new DecimalFormat("0.#").format(totalCount), preference.getPreferenceString(KEY_CURRENCY)));
+        preference.setPreference(KEY_TOTAL_COUNT, totalCount);
     }
 
     @Override
@@ -138,6 +145,9 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
             case R.id.layout_dialog_light_excel_total:
                 switchExcel.setChecked(!switchExcel.isChecked());
                 break;
+            case R.id.layout_list_total:
+                showOffsetDialog();
+                break;
         }
     }
 
@@ -157,8 +167,8 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
                 });
                 listModels.clear();
                 listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
-                totalCount = 0;
-                textResult.setText(getContext().getString(R.string.total_price, new DecimalFormat("0.#").format(totalCount), preference.getPreferenceString(KEY_CURRENCY)));
+                preference.setPreference(KEY_TOTAL_COUNT, 0);
+                textResult.setText(getContext().getString(R.string.total_price, new DecimalFormat("0.#").format(0), preference.getPreferenceString(KEY_CURRENCY)));
                 list.getAdapter().notifyDataSetChanged();
             }
         });
@@ -215,8 +225,12 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
                 cursor.close();
                 if (preference.getPreferenceBoolean(KEY_TOTAL)) {
                     position += 2;
-                    sheet.addCell(new Label(0, position, "Total"));
-                    sheet.addCell(new Label(1, position, new DecimalFormat("0.#").format(totalCount)));
+                    sheet.addCell(new Label(0, position, "Offset"));
+                    sheet.addCell(new Label(1, position, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_OFFSET))));
+                    sheet.addCell(new Label(0, position + 1, "Total"));
+                    sheet.addCell(new Label(1, position + 1, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT))));
+                    sheet.addCell(new Label(0, position + 2, "Total with offset"));
+                    sheet.addCell(new Label(1, position + 2, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT) + preference.getPreferenceDouble(KEY_OFFSET))));
                 }
             } catch (WriteException e) {
                 e.printStackTrace();
@@ -234,4 +248,52 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         Toast.makeText(getContext(), "Excel generated", Toast.LENGTH_SHORT).show();
         notifier.change();
     }
+
+    private void showOffsetDialog() {
+        builderOffset = new AlertDialog.Builder(getContext());
+        View viewDialog = LayoutInflater.from(getContext()).inflate(R.layout.dialog_light_offset, null);
+        builderOffset.setView(viewDialog);
+        final EditText editOffset = viewDialog.findViewById(R.id.edit_dialog_light_limit);
+        final TextView textTotal = viewDialog.findViewById(R.id.text_dialog_light_total);
+        textTotal.setText(getString(R.string.total_price, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT)), preference.getPreferenceString(KEY_CURRENCY)));
+        final TextView textTotalOffset = viewDialog.findViewById(R.id.text_dialog_light_total_offset);
+        textTotalOffset.setText(getString(R.string.total_price_with_offset, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT) + preference.getPreferenceDouble(KEY_OFFSET)), preference.getPreferenceString(KEY_CURRENCY)));
+        editOffset.setText(new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_OFFSET)));
+        editOffset.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (!(editable.toString().isEmpty() || editable.toString().equals("-"))) {
+                    textTotalOffset.setText(getString(R.string.total_price_with_offset, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT) + Double.parseDouble(editable.toString())), preference.getPreferenceString(KEY_CURRENCY)));
+                }
+            }
+        });
+        builderOffset.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (editOffset.getText().toString().isEmpty() || editOffset.getText().toString().equals("-")) {
+                    editOffset.setText("0");
+                }
+                preference.setPreference(KEY_OFFSET, editOffset.getText().toString());
+            }
+        });
+        builderOffset.setNeutralButton("Close", null);
+        builderOffset.setNegativeButton("Clear", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                preference.setPreference(KEY_OFFSET, "0");
+            }
+        });
+        builderOffset.show();
+    }
+
 }

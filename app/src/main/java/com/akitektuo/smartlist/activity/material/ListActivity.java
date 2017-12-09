@@ -35,8 +35,8 @@ import static com.akitektuo.smartlist.util.Constant.COLOR_YELLOW;
 import static com.akitektuo.smartlist.util.Constant.KEY_COLOR;
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
 import static com.akitektuo.smartlist.util.Constant.KEY_NIGHT;
+import static com.akitektuo.smartlist.util.Constant.KEY_TOTAL_COUNT;
 import static com.akitektuo.smartlist.util.Constant.handler;
-import static com.akitektuo.smartlist.util.Constant.totalCount;
 
 public class ListActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -70,9 +70,9 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         buttonSettings.setOnClickListener(this);
         buttonDelete.setOnClickListener(this);
         refreshForColor(preference.getPreferenceString(KEY_COLOR));
-        totalCount = 0;
         listModels = new ArrayList<>();
         Cursor cursor = database.getList();
+        double totalCount = 0;
         if (cursor.moveToFirst()) {
             do {
                 listModels.add(new ListModel(cursor.getInt(0), cursor.getString(1), preference.getPreferenceString(KEY_CURRENCY), cursor.getString(2), 1));
@@ -83,6 +83,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         list.setAdapter(new ListAdapter(this, listModels, textResult));
         list.smoothScrollToPosition(listModels.size());
         textResult.setText(getString(R.string.total_price, new DecimalFormat("0.#").format(totalCount), preference.getPreferenceString(KEY_CURRENCY)));
+        preference.setPreference(KEY_TOTAL_COUNT, totalCount);
     }
 
     private void deleteAllItems() {
@@ -111,8 +112,8 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                             public void run() {
                                 listModels.clear();
                                 listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
-                                totalCount = 0;
-                                textResult.setText(getBaseContext().getString(R.string.total_price, new DecimalFormat("0.#").format(totalCount), preference.getPreferenceString(KEY_CURRENCY)));
+                                preference.setPreference(KEY_TOTAL_COUNT, 0);
+                                textResult.setText(getBaseContext().getString(R.string.total_price, new DecimalFormat("0.#").format(0), preference.getPreferenceString(KEY_CURRENCY)));
                                 list.getAdapter().notifyDataSetChanged();
                             }
                         }, 500);
