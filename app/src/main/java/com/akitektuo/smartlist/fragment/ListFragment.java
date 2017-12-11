@@ -48,6 +48,7 @@ import jxl.write.WriteException;
 
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
 import static com.akitektuo.smartlist.util.Constant.KEY_OFFSET;
+import static com.akitektuo.smartlist.util.Constant.KEY_OFFSET_UPDATE;
 import static com.akitektuo.smartlist.util.Constant.KEY_TOTAL;
 import static com.akitektuo.smartlist.util.Constant.KEY_TOTAL_COUNT;
 import static com.akitektuo.smartlist.util.Constant.handler;
@@ -102,6 +103,9 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         switchExcel.setChecked(preference.getPreferenceBoolean(KEY_TOTAL));
         switchExcel.setOnCheckedChangeListener(this);
         notifier = (FileGenerationNotifier) getActivity();
+
+        double test = preference.getPreferenceDouble(KEY_OFFSET) + preference.getPreferenceDouble(KEY_TOTAL_COUNT);
+        System.out.println(preference.getPreferenceString(KEY_OFFSET) + " " + preference.getPreferenceString(KEY_TOTAL_COUNT) + " " + test);
     }
 
     private void populateList() {
@@ -167,7 +171,11 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
                 });
                 listModels.clear();
                 listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
-                preference.setPreference(KEY_TOTAL_COUNT, 0);
+                if (preference.getPreferenceBoolean(KEY_OFFSET_UPDATE)) {
+                    double newOffset = preference.getPreferenceDouble(KEY_OFFSET) + preference.getPreferenceDouble(KEY_TOTAL_COUNT);
+                    preference.setPreference(KEY_OFFSET, newOffset);
+                }
+                preference.setPreference(KEY_TOTAL_COUNT, "0");
                 textResult.setText(getContext().getString(R.string.total_price, new DecimalFormat("0.#").format(0), preference.getPreferenceString(KEY_CURRENCY)));
                 list.getAdapter().notifyDataSetChanged();
             }
@@ -257,6 +265,20 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         final TextView textTotal = viewDialog.findViewById(R.id.text_dialog_light_total);
         textTotal.setText(getString(R.string.total_price, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT)), preference.getPreferenceString(KEY_CURRENCY)));
         final TextView textTotalOffset = viewDialog.findViewById(R.id.text_dialog_light_total_offset);
+        final Switch switchUpdateOffset = viewDialog.findViewById(R.id.switch_dialog_light_offset_update);
+        switchUpdateOffset.setChecked(preference.getPreferenceBoolean(KEY_OFFSET_UPDATE));
+        viewDialog.findViewById(R.id.layout_dialog_light_offset).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchUpdateOffset.setChecked(!switchUpdateOffset.isChecked());
+            }
+        });
+        switchUpdateOffset.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                preference.setPreference(KEY_OFFSET_UPDATE, b);
+            }
+        });
         textTotalOffset.setText(getString(R.string.total_price_with_offset, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT) + preference.getPreferenceDouble(KEY_OFFSET)), preference.getPreferenceString(KEY_CURRENCY)));
         editOffset.setText(new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_OFFSET)));
         editOffset.addTextChangedListener(new TextWatcher() {

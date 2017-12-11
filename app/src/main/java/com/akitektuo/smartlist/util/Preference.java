@@ -14,6 +14,7 @@ import static com.akitektuo.smartlist.util.Constant.KEY_DESIGN;
 import static com.akitektuo.smartlist.util.Constant.KEY_INITIALIZE;
 import static com.akitektuo.smartlist.util.Constant.KEY_NIGHT;
 import static com.akitektuo.smartlist.util.Constant.KEY_OFFSET;
+import static com.akitektuo.smartlist.util.Constant.KEY_OFFSET_UPDATE;
 import static com.akitektuo.smartlist.util.Constant.KEY_RECOMMENDATIONS;
 import static com.akitektuo.smartlist.util.Constant.KEY_SMART_PRICE;
 import static com.akitektuo.smartlist.util.Constant.KEY_STORAGE;
@@ -90,5 +91,6 @@ public class Preference {
         setPreference(KEY_DESIGN, 0);
         setPreference(KEY_TOTAL_COUNT, 0d);
         setPreference(KEY_OFFSET, 0d);
+        setPreference(KEY_OFFSET_UPDATE, false);
     }
 }

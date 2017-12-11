@@ -32,8 +32,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/offset"
-            android:textSize="16sp"
-            android:textColor="@color/colorLightSilverDark" />
+            android:textColor="@color/colorLightSilverDark"
+            android:textSize="16sp" />
 
         <EditText
             android:id="@+id/edit_dialog_light_limit"
@@ -41,8 +41,8 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@android:color/transparent"
             android:inputType="numberSigned|numberDecimal"
-            android:textSize="16sp"
-            android:textColor="@color/colorLightSilverDark" />
+            android:textColor="@color/colorLightSilverDark"
+            android:textSize="16sp" />
 
     </LinearLayout>
 
@@ -61,5 +61,55 @@
         android:layout_gravity="center_horizontal"
         android:padding="4dp"
         android:text="@string/total_price_with_offset" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/colorLightSilverLight" />
+
+    <RelativeLayout
+        android:id="@+id/layout_dialog_light_offset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Switch
+            android:id="@+id/switch_dialog_light_offset_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@id/switch_dialog_light_offset_update"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingEnd="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingBottom="8dp"
+                android:text="@string/update_offset"
+                android:textColor="@color/colorLight"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/update_offset_status"
+                android:textColor="@color/colorLightSilverDark" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </LinearLayout>
