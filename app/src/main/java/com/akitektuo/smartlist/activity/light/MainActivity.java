@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             database.addCategory("Fees");
             database.addCategory("Utilities");
             database.addCategory("Transportation");
-            database.addCategory("Cloths");
+            database.addCategory("Clothes");
             database.addCategory("Entertainment");
         }
 
