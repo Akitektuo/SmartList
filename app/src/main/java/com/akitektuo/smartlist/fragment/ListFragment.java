@@ -103,9 +103,6 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         switchExcel.setChecked(preference.getPreferenceBoolean(KEY_TOTAL));
         switchExcel.setOnCheckedChangeListener(this);
         notifier = (FileGenerationNotifier) getActivity();
-
-        double test = preference.getPreferenceDouble(KEY_OFFSET) + preference.getPreferenceDouble(KEY_TOTAL_COUNT);
-        System.out.println(preference.getPreferenceString(KEY_OFFSET) + " " + preference.getPreferenceString(KEY_TOTAL_COUNT) + " " + test);
     }
 
     private void populateList() {

@@ -277,7 +277,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 AlertDialog.Builder builderRecommendations = new AlertDialog.Builder(this);
                 builderRecommendations.setTitle("Select product to delete");
                 List<String> listProducts = new ArrayList<>();
-                Cursor cursorProducts = database.getUsage(database.getReadableDatabase());
+                Cursor cursorProducts = database.getUsage();
                 if (cursorProducts.moveToFirst()) {
                     do {
                         listProducts.add(cursorProducts.getString(0));
@@ -287,7 +287,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 builderRecommendations.setItems(arrayProducts, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        database.deleteUsage(database.getWritableDatabase(), arrayProducts[i]);
+                        database.deleteUsage(arrayProducts[i]);
                         Toast.makeText(getApplicationContext(), "Successfully deleted " + arrayProducts[i] + " product.", Toast.LENGTH_SHORT).show();
                     }
                 });

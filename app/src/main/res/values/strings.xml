@@ -43,4 +43,7 @@
     <string name="total_price_with_offset">Total with offset: %1$s %2$s</string>
     <string name="update_offset">Update Offset</string>
     <string name="update_offset_status">Update the offset automatically after the entire list has been deleted</string>
+    <string name="manage_categories">Manage Categories</string>
+    <string name="manage_categories_status">Change a product\'s category, add or delete categories</string>
+    <string name="category_name">Category name:</string>
 </resources>

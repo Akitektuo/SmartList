@@ -210,11 +210,9 @@ public class LightListAdapter extends RecyclerView.Adapter<LightListAdapter.View
 
     private void updateDatabase(int position) {
         int lastIndex = listModels.size();
-        System.out.println(position + " " + lastIndex);
         for (int i = position; i < lastIndex; i++) {
             ListModel listModel = listModels.get(i);
             listModel.decrementNumber();
-            System.out.println((i + 2) + " " + listModel.getNumber() + " " + listModel.getValue() + " " + listModel.getProduct());
             database.updateList(i + 2, listModel.getNumber(), listModel.getValue(), listModel.getProduct());
             listModels.set(i, listModel);
         }
@@ -225,7 +223,7 @@ public class LightListAdapter extends RecyclerView.Adapter<LightListAdapter.View
             handler.post(new Runnable() {
                 public void run() {
                     ArrayList<String> list = new ArrayList<>();
-                    Cursor cursor = database.getUsage(database.getReadableDatabase());
+                    Cursor cursor = database.getUsage();
                     if (cursor.moveToFirst()) {
                         do {
                             list.add(cursor.getString(0));

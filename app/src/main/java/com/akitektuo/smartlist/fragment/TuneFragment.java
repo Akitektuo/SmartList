@@ -1,6 +1,7 @@
 package com.akitektuo.smartlist.fragment;
 
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -8,10 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.akitektuo.smartlist.R;
+import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.util.Preference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.akitektuo.smartlist.util.Constant.CURRENCY_AED;
 import static com.akitektuo.smartlist.util.Constant.CURRENCY_AUD;
@@ -41,6 +48,7 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
     private Switch switchFill;
     private int layoutId;
     private Preference preference;
+    private DatabaseHelper database;
 
     public TuneFragment() {
         layoutId = R.layout.fragment_tune;
@@ -56,6 +64,7 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         preference = new Preference(getContext());
+        database = new DatabaseHelper(getContext());
 
         switchRecommendations = getActivity().findViewById(R.id.switch_light_recommendations);
         switchFill = getActivity().findViewById(R.id.switch_light_fill);
@@ -69,6 +78,7 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
         getActivity().findViewById(R.id.layout_light_tune_recommendations).setOnClickListener(this);
         getActivity().findViewById(R.id.layout_light_tune_fill).setOnClickListener(this);
         getActivity().findViewById(R.id.layout_light_currency).setOnClickListener(this);
+        getActivity().findViewById(R.id.layout_light_categories).setOnClickListener(this);
     }
 
     @Override
@@ -118,6 +128,9 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
                 break;
             case R.id.layout_light_tune_fill:
                 switchFill.setChecked(!switchFill.isChecked());
+                break;
+            case R.id.layout_light_categories:
+                manageCategories();
                 break;
         }
     }
@@ -176,5 +189,154 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
         builderCurrency.setNeutralButton("Cancel", null);
         AlertDialog alertDialogCurrency = builderCurrency.create();
         alertDialogCurrency.show();
+    }
+
+    private void manageCategories() {
+
+        // WARNING: A lot of code
+
+        // Dialog to pick a category
+        AlertDialog.Builder builderCategories = new AlertDialog.Builder(getContext());
+        builderCategories.setTitle("Select a category to modify");
+        Cursor cursor = database.getCategoryAsc();
+        final List<String> listCategories = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                listCategories.add(cursor.getString(1));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        builderCategories.setItems(listCategories.toArray(new String[0]), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(final DialogInterface dialogInterface, int i) {
+
+                // Dialog to select products to move or edit option
+                final int position = i;
+                Cursor cursor = database.getCategory(listCategories.get(position));
+                int id = 0;
+                if (cursor.moveToFirst()) {
+                    id = cursor.getInt(0);
+                }
+                final int categoryId = id;
+                cursor.close();
+                cursor = database.getUsageAsc(categoryId);
+                final List<String> listProducts = new ArrayList<>();
+                if (cursor.moveToFirst()) {
+                    do {
+                        listProducts.add(cursor.getString(0));
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+                final List<Integer> selectedItems = new ArrayList<>();
+                final AlertDialog.Builder builderProducts = new AlertDialog.Builder(getContext());
+                builderProducts.setTitle("Select products to move");
+                builderProducts.setMultiChoiceItems(listProducts.toArray(new String[0]), null, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+                        if (b) {
+                            selectedItems.add(i);
+                        } else if (selectedItems.contains(i)) {
+                            selectedItems.remove(Integer.valueOf(i));
+                        }
+                    }
+                });
+                builderProducts.setNeutralButton("Cancel", null);
+                builderProducts.setPositiveButton("Move", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        // Dialog to select target
+                        AlertDialog.Builder builderCurrency = new AlertDialog.Builder(getContext());
+                        builderCurrency.setTitle("Move to category");
+                        builderCurrency.setItems(listCategories.toArray(new String[0]), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Cursor cursor = database.getCategory(listCategories.get(i));
+                                int categoryId = 0;
+                                if (cursor.moveToFirst()) {
+                                    categoryId = cursor.getInt(0);
+                                }
+                                cursor.close();
+                                for (int x : selectedItems) {
+                                    database.updateUsage(listProducts.get(x), categoryId);
+                                }
+                                Toast.makeText(getContext(), "Product(s) moved", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        builderCurrency.setNeutralButton("Cancel", null);
+                        AlertDialog alertDialogCurrency = builderCurrency.create();
+                        alertDialogCurrency.show();
+
+                    }
+                }).setNegativeButton("Edit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        // Dialog to edit or delete a category
+                        AlertDialog.Builder builderNewCategory = new AlertDialog.Builder(getContext());
+                        View viewDialog = LayoutInflater.from(getContext()).inflate(R.layout.dialog_light_category_input, null);
+                        final EditText editCategoryName = viewDialog.findViewById(R.id.edit_dialog_light_category);
+                        editCategoryName.setText(listCategories.get(position));
+                        builderNewCategory.setView(viewDialog);
+                        builderNewCategory.setTitle("Edit category");
+                        builderNewCategory.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String categoryName = editCategoryName.getText().toString();
+                                Cursor cursor = database.getCategory(categoryName);
+                                if (cursor.moveToNext()) {
+                                    Toast.makeText(getContext(), "Category already exists", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    database.updateCategory(categoryId, categoryName);
+                                    Toast.makeText(getContext(), "Category updated", Toast.LENGTH_SHORT).show();
+                                }
+                                cursor.close();
+                            }
+                        }).setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                database.updateUsage(categoryId);
+                                database.deleteCategory(categoryId);
+                                Toast.makeText(getContext(), "Category deleted", Toast.LENGTH_SHORT).show();
+                            }
+                        }).setNeutralButton("Cancel", null);
+                        builderNewCategory.show();
+                    }
+                });
+                AlertDialog alertDialogProducts = builderProducts.create();
+                alertDialogProducts.show();
+            }
+        });
+        builderCategories.setNeutralButton("Cancel", null);
+        builderCategories.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                // Dialog to save a new category
+                AlertDialog.Builder builderNewCategory = new AlertDialog.Builder(getContext());
+                View viewDialog = LayoutInflater.from(getContext()).inflate(R.layout.dialog_light_category_input, null);
+                final EditText editCategoryName = viewDialog.findViewById(R.id.edit_dialog_light_category);
+                builderNewCategory.setView(viewDialog);
+                builderNewCategory.setTitle("Create a new category");
+                builderNewCategory.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String categoryName = editCategoryName.getText().toString();
+                        Cursor cursor = database.getCategory(categoryName);
+                        if (cursor.moveToNext()) {
+                            Toast.makeText(getContext(), "Category already exists", Toast.LENGTH_SHORT).show();
+                        } else {
+                            database.addCategory(categoryName);
+                            Toast.makeText(getContext(), "Category " + categoryName + " saved", Toast.LENGTH_SHORT).show();
+                        }
+                        cursor.close();
+                    }
+                });
+                builderNewCategory.setNeutralButton("Cancel", null);
+                builderNewCategory.show();
+            }
+        });
+        AlertDialog alertDialogCategories = builderCategories.create();
+        alertDialogCategories.show();
     }
 }

@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.ViewPagerAdapter;
 import com.akitektuo.smartlist.communicator.FileGenerationNotifier;
+import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.fragment.FolderFragment;
 import com.akitektuo.smartlist.fragment.ListFragment;
 import com.akitektuo.smartlist.fragment.SettingsFragment;
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     private ViewPager pager;
     private TabLayout tab;
     private FolderFragment folderFragment;
+    private DatabaseHelper database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,17 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         tab.setupWithViewPager(pager);
         tab.addOnTabSelectedListener(this);
         setupTabIcons();
+
+        database = new DatabaseHelper(this);
+        if (database.getCategoryId() == 0) {
+            database.addCategory("Other");
+            database.addCategory("Food");
+            database.addCategory("Fees");
+            database.addCategory("Utilities");
+            database.addCategory("Transportation");
+            database.addCategory("Cloths");
+            database.addCategory("Entertainment");
+        }
 
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
     }

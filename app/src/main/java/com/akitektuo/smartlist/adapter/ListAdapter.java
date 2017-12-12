@@ -238,7 +238,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             handler.post(new Runnable() {
                 public void run() {
                     ArrayList<String> list = new ArrayList<>();
-                    Cursor cursor = database.getUsage(database.getReadableDatabase());
+                    Cursor cursor = database.getUsage();
                     if (cursor.moveToFirst()) {
                         do {
                             list.add(cursor.getString(0));

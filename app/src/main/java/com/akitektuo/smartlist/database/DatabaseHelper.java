@@ -22,17 +22,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "database.db";
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
-    private static final String DATABASE_QUERY_LIST = "CREATE TABLE " + DatabaseContract.ListContractEntry.TABLE_NAME + " (" +
+    private static final String DATABASE_CREATE_LIST = "CREATE TABLE IF NOT EXISTS " + DatabaseContract.ListContractEntry.TABLE_NAME + " (" +
             DatabaseContract.ListContractEntry.COLUMN_NAME_NUMBER + " NUMBER," +
             DatabaseContract.ListContractEntry.COLUMN_NAME_VALUE + " TEXT," +
             DatabaseContract.ListContractEntry.COLUMN_NAME_PRODUCT + " TEXT," +
             DatabaseContract.ListContractEntry.COLUMN_NAME_DATE + " TEXT" + ");";
 
-    private static final String DATABASE_QUERY_USAGE = "CREATE TABLE " + DatabaseContract.UsageContractEntry.TABLE_NAME + " (" +
+    private static final String DATABASE_CREATE_USAGE = "CREATE TABLE IF NOT EXISTS " + DatabaseContract.UsageContractEntry.TABLE_NAME + " (" +
             DatabaseContract.UsageContractEntry.COLUMN_NAME_PRODUCTS + " TEXT," +
             DatabaseContract.UsageContractEntry.COLUMN_NAME_PRICES + " TEXT" + ");";
+
+    private static final String DATABASE_ALTER_USAGE_CATEGORY = "ALTER TABLE " + DatabaseContract.UsageContractEntry.TABLE_NAME +
+            " ADD COLUMN " + DatabaseContract.UsageContractEntry.COLUMN_NAME_CATEGORY_ID + " NUMBER;";
+
+    private static final String DATABASE_CREATE_CATEGORY = "CREATE TABLE IF NOT EXISTS " + DatabaseContract.CategoryContractEntry.TABLE_NAME + " (" +
+            DatabaseContract.CategoryContractEntry.COLUMN_NAME_ID + " NUMBER," +
+            DatabaseContract.CategoryContractEntry.COLUMN_NAME_NAME + " TEXT);";
 
     private Preference preference;
 
@@ -43,13 +50,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL(DATABASE_QUERY_LIST);
-        sqLiteDatabase.execSQL(DATABASE_QUERY_USAGE);
+        sqLiteDatabase.execSQL(DATABASE_CREATE_LIST);
+        sqLiteDatabase.execSQL(DATABASE_CREATE_USAGE);
+        updateToVersion2(sqLiteDatabase);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        System.out.println("------------------- UPDATE");
+        switch (oldVersion) {
+            case 1:
+                updateToVersion2(sqLiteDatabase);
+        }
+    }
 
+    private void updateToVersion2(SQLiteDatabase db) {
+        db.execSQL(DATABASE_ALTER_USAGE_CATEGORY);
+        db.execSQL(DATABASE_CREATE_CATEGORY);
     }
 
     public void addList(int number, String value, String product, String date) {
@@ -109,13 +126,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseContract.UsageContractEntry.COLUMN_NAME_PRODUCTS, products);
         contentValues.put(DatabaseContract.UsageContractEntry.COLUMN_NAME_PRICES, prices);
+        contentValues.put(DatabaseContract.UsageContractEntry.COLUMN_NAME_CATEGORY_ID, 0);
         getWritableDatabase().insert(DatabaseContract.UsageContractEntry.TABLE_NAME, null, contentValues);
     }
 
-    public Cursor getUsage(SQLiteDatabase database) {
+    public Cursor getUsage() {
         String[] list = {DatabaseContract.UsageContractEntry.COLUMN_NAME_PRODUCTS,
-                DatabaseContract.UsageContractEntry.COLUMN_NAME_PRICES};
-        return database.query(DatabaseContract.UsageContractEntry.TABLE_NAME, list, null, null, null, null, null);
+                DatabaseContract.UsageContractEntry.COLUMN_NAME_PRICES,
+                DatabaseContract.UsageContractEntry.COLUMN_NAME_CATEGORY_ID};
+        return getReadableDatabase().query(DatabaseContract.UsageContractEntry.TABLE_NAME, list, null, null, null, null, null);
     }
 
     private String getPricesForProducts(String products) {
@@ -140,6 +159,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return false;
+    }
+
+    public void updateUsage(String products, int id) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseContract.UsageContractEntry.COLUMN_NAME_CATEGORY_ID, id);
+        String selection = DatabaseContract.UsageContractEntry.COLUMN_NAME_PRODUCTS + " LIKE ?";
+        String[] selectionArgs = {products};
+        getWritableDatabase().update(DatabaseContract.UsageContractEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+    }
+
+    public void updateUsage(int id) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseContract.UsageContractEntry.COLUMN_NAME_CATEGORY_ID, 0);
+        String selection = DatabaseContract.UsageContractEntry.COLUMN_NAME_CATEGORY_ID + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        getWritableDatabase().update(DatabaseContract.UsageContractEntry.TABLE_NAME, contentValues, selection, selectionArgs);
     }
 
     private void updateUsage(String products, String prices) {
@@ -208,10 +243,69 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void deleteUsage(SQLiteDatabase database, String product) {
+    public void deleteUsage(String product) {
         String selection = DatabaseContract.UsageContractEntry.COLUMN_NAME_PRODUCTS + " LIKE ?";
         String[] selectionArgs = {product};
-        database.delete(DatabaseContract.UsageContractEntry.TABLE_NAME, selection, selectionArgs);
+        getWritableDatabase().delete(DatabaseContract.UsageContractEntry.TABLE_NAME, selection, selectionArgs);
+    }
+
+    public void addCategory(String name) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseContract.CategoryContractEntry.COLUMN_NAME_ID, getCategoryId());
+        contentValues.put(DatabaseContract.CategoryContractEntry.COLUMN_NAME_NAME, name);
+        getWritableDatabase().insert(DatabaseContract.CategoryContractEntry.TABLE_NAME, null, contentValues);
+    }
+
+    public Cursor getCategory() {
+        String[] list = {DatabaseContract.CategoryContractEntry.COLUMN_NAME_ID,
+                DatabaseContract.CategoryContractEntry.COLUMN_NAME_NAME};
+        return getReadableDatabase().query(DatabaseContract.CategoryContractEntry.TABLE_NAME, list, null, null, null, null, null);
+    }
+
+    public Cursor getCategoryAsc() {
+        String[] list = {DatabaseContract.CategoryContractEntry.COLUMN_NAME_ID,
+                DatabaseContract.CategoryContractEntry.COLUMN_NAME_NAME};
+        return getReadableDatabase().query(DatabaseContract.CategoryContractEntry.TABLE_NAME, list, null, null, null, null, DatabaseContract.CategoryContractEntry.COLUMN_NAME_NAME + " ASC");
+    }
+
+    public void deleteCategory(int id) {
+        String selection = DatabaseContract.CategoryContractEntry.COLUMN_NAME_ID + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        getWritableDatabase().delete(DatabaseContract.CategoryContractEntry.TABLE_NAME, selection, selectionArgs);
+    }
+
+    public void updateCategory(int id, String name) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseContract.CategoryContractEntry.COLUMN_NAME_NAME, name);
+        String selection = DatabaseContract.CategoryContractEntry.COLUMN_NAME_ID + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(id)};
+        getWritableDatabase().update(DatabaseContract.CategoryContractEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+    }
+
+    public int getCategoryId() {
+        int number = 0;
+        Cursor cursor = getCategory();
+        if (cursor.moveToLast()) {
+            number = cursor.getInt(0) + 1;
+        }
+        cursor.close();
+        return number;
+    }
+
+    public Cursor getUsageAsc(int categoryId) {
+        String[] list = {DatabaseContract.UsageContractEntry.COLUMN_NAME_PRODUCTS,
+                DatabaseContract.UsageContractEntry.COLUMN_NAME_PRICES};
+        String selection = DatabaseContract.UsageContractEntry.COLUMN_NAME_CATEGORY_ID + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(categoryId)};
+        return getReadableDatabase().query(DatabaseContract.UsageContractEntry.TABLE_NAME, list, selection, selectionArgs, null, null, DatabaseContract.UsageContractEntry.COLUMN_NAME_PRODUCTS + " ASC");
+    }
+
+    public Cursor getCategory(String name) {
+        String[] list = {DatabaseContract.CategoryContractEntry.COLUMN_NAME_ID,
+                DatabaseContract.CategoryContractEntry.COLUMN_NAME_NAME};
+        String selection = DatabaseContract.CategoryContractEntry.COLUMN_NAME_NAME + " LIKE ?";
+        String[] selectionArgs = {name};
+        return getReadableDatabase().query(DatabaseContract.CategoryContractEntry.TABLE_NAME, list, selection, selectionArgs, null, null, null);
     }
 
 }
