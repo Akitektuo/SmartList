@@ -117,13 +117,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Toast.makeText(context, "Item deleted...", Toast.LENGTH_SHORT).show();
-                        preference.setPreference(KEY_TOTAL_COUNT, preference.getPreferenceDouble(KEY_TOTAL_COUNT) - Double.parseDouble(listModels.get(holder.getAdapterPosition()).getValue()));
+                        preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT)) - Double.parseDouble(listModels.get(holder.getAdapterPosition()).getValue())));
                         database.deleteList(holder.getAdapterPosition() + 1);
                         listModels.remove(holder.getAdapterPosition());
                         updateDatabase(holder.getAdapterPosition());
                         notifyDataSetChanged();
                         textTotal.setText(context.getString(R.string.total_price,
-                                new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT)),
+                                new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT))),
                                 preference.getPreferenceString(KEY_CURRENCY)));
                     }
                 });
@@ -148,18 +148,18 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                             if (holder.getAdapterPosition() + 1 == lastItem) {
                                 database.addList(lastItem, value, product,
                                         new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date()));
-                                preference.setPreference(KEY_TOTAL_COUNT, preference.getPreferenceDouble(KEY_TOTAL_COUNT) + Double.parseDouble(value));
+                                preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT)) + Double.parseDouble(value)));
                                 listModels.set(listModels.size() - 1, new ListModel(lastItem, value, preference.getPreferenceString(KEY_CURRENCY), product, 1));
                                 listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
                                 notifyDataSetChanged();
-                                textTotal.setText(context.getString(R.string.total_price, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT)), preference.getPreferenceString(KEY_CURRENCY)));
+                                textTotal.setText(context.getString(R.string.total_price, new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT))), preference.getPreferenceString(KEY_CURRENCY)));
                                 Toast.makeText(context, "Item saved...", Toast.LENGTH_SHORT).show();
                             } else {
                                 database.updateList(holder.getAdapterPosition() + 1, listModel.getNumber(), value, product);
-                                preference.setPreference(KEY_TOTAL_COUNT, preference.getPreferenceDouble(KEY_TOTAL_COUNT) + Double.parseDouble(value) - Double.parseDouble(listModels.get(holder.getAdapterPosition()).getValue()));
+                                preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT)) + Double.parseDouble(value) - Double.parseDouble(listModels.get(holder.getAdapterPosition()).getValue())));
                                 listModels.set(holder.getAdapterPosition(), new ListModel(listModel.getNumber(), value, preference.getPreferenceString(KEY_CURRENCY), product, 1));
                                 notifyDataSetChanged();
-                                textTotal.setText(context.getString(R.string.total_price, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT)), preference.getPreferenceString(KEY_CURRENCY)));
+                                textTotal.setText(context.getString(R.string.total_price, new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT))), preference.getPreferenceString(KEY_CURRENCY)));
                                 Toast.makeText(context, "Item updated...", Toast.LENGTH_SHORT).show();
                             }
                             database.updatePrices(holder.editAutoProduct.getText().toString(),

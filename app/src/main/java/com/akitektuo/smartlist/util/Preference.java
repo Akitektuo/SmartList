@@ -52,10 +52,6 @@ public class Preference {
         savePreferences();
     }
 
-    public void setPreference(String key, double num) {
-        setPreference(key, String.valueOf(num));
-    }
-
     public void setPreference(String key, String string) {
         editor.putString(key, string);
         savePreferences();
@@ -67,10 +63,6 @@ public class Preference {
 
     public int getPreferenceInt(String key) {
         return sharedPreferences.getInt(key, 0);
-    }
-
-    public Double getPreferenceDouble(String key) {
-        return Double.parseDouble(sharedPreferences.getString(key, "0"));
     }
 
     public String getPreferenceString(String key) {
@@ -89,8 +81,8 @@ public class Preference {
         setPreference(KEY_NIGHT, false);
         setPreference(KEY_TOTAL, false);
         setPreference(KEY_DESIGN, 0);
-        setPreference(KEY_TOTAL_COUNT, 0d);
-        setPreference(KEY_OFFSET, 0d);
+        setPreference(KEY_TOTAL_COUNT, "0");
+        setPreference(KEY_OFFSET, "0");
         setPreference(KEY_OFFSET_UPDATE, false);
     }
 }

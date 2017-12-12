@@ -616,7 +616,7 @@ public class SettingsActivity extends Activity implements View.OnClickListener, 
                 if (preference.getPreferenceBoolean(KEY_TOTAL)) {
                     position += 2;
                     sheet.addCell(new Label(0, position, "Total"));
-                    sheet.addCell(new Label(1, position, new DecimalFormat("0.#").format(preference.getPreferenceDouble(KEY_TOTAL_COUNT))));
+                    sheet.addCell(new Label(1, position, new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT)))));
                 }
             } catch (WriteException e) {
                 e.printStackTrace();

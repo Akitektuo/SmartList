@@ -83,7 +83,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         list.setAdapter(new ListAdapter(this, listModels, textResult));
         list.smoothScrollToPosition(listModels.size());
         textResult.setText(getString(R.string.total_price, new DecimalFormat("0.#").format(totalCount), preference.getPreferenceString(KEY_CURRENCY)));
-        preference.setPreference(KEY_TOTAL_COUNT, totalCount);
+        preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(totalCount));
     }
 
     private void deleteAllItems() {
