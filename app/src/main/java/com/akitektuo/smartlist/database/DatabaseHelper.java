@@ -57,7 +57,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        System.out.println("------------------- UPDATE");
         switch (oldVersion) {
             case 1:
                 updateToVersion2(sqLiteDatabase);
