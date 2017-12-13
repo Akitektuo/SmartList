@@ -292,14 +292,18 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
                                 }
                                 cursor.close();
                             }
-                        }).setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                database.updateUsage(categoryId);
-                                database.deleteCategory(categoryId);
-                                Toast.makeText(getContext(), "Category deleted", Toast.LENGTH_SHORT).show();
-                            }
-                        }).setNeutralButton("Cancel", null);
+                        });
+                        if (categoryId != 0) {
+                            builderNewCategory.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    database.updateUsage(categoryId);
+                                    database.deleteCategory(categoryId);
+                                    Toast.makeText(getContext(), "Category deleted", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                        builderNewCategory.setNeutralButton("Cancel", null);
                         builderNewCategory.show();
                     }
                 });
