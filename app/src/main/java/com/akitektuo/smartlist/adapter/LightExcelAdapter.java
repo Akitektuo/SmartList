@@ -1,5 +1,6 @@
 package com.akitektuo.smartlist.adapter;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.akitektuo.smartlist.R;
+import com.akitektuo.smartlist.communicator.ImportNotifier;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.model.ExcelModel;
 
@@ -40,11 +42,13 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
     private List<ExcelModel> excelModels;
     private Context context;
     private DatabaseHelper database;
+    private ImportNotifier importNotifier;
 
-    public LightExcelAdapter(Context context, List<ExcelModel> excelModels) {
-        this.context = context;
+    public LightExcelAdapter(Activity activity, List<ExcelModel> excelModels) {
+        this.context = activity;
+        this.importNotifier = (ImportNotifier) activity;
         this.excelModels = excelModels;
-        database = new DatabaseHelper(context);
+        database = new DatabaseHelper(activity);
     }
 
     @Override
@@ -131,7 +135,6 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
     private void openFile(int position) {
         File file = new File(Environment.getExternalStorageDirectory() + File.separator + "SmartList", excelModels.get(position).getName());
         Intent intent = new Intent(Intent.ACTION_VIEW);
-//        intent.setDataAndType(Uri.fromFile(file), "application/vnd.ms-excel");
         intent.setDataAndType(FileProvider.getUriForFile(context, context.getPackageName() + ".com.akitektuo.smartlist", file), "application/vnd.ms-excel");
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -178,6 +181,7 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
                 }
                 database.addList(database.getListNumberNew(), sheet.getCell(0, i).getContents(), sheet.getCell(1, i).getContents(), date);
             }
+            importNotifier.refreshList();
         } catch (IOException | BiffException e) {
             e.printStackTrace();
         }
@@ -191,9 +195,9 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
 
         ViewHolder(View view) {
             super(view);
-            layout = (LinearLayout) view.findViewById(R.id.layout_item_excel);
-            textName = (TextView) view.findViewById(R.id.text_item_excel_name);
-            textSize = (TextView) view.findViewById(R.id.text_item_excel_size);
+            layout = view.findViewById(R.id.layout_item_excel);
+            textName = view.findViewById(R.id.text_item_excel_name);
+            textSize = view.findViewById(R.id.text_item_excel_size);
         }
     }
 

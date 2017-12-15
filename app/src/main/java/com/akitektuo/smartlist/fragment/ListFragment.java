@@ -105,7 +105,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         notifier = (FileGenerationNotifier) getActivity();
     }
 
-    private void populateList() {
+    public void populateList() {
         Cursor cursor = database.getList();
         double totalCount = 0;
         if (cursor.moveToFirst()) {

@@ -68,7 +68,7 @@ public class FolderFragment extends Fragment {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(listExcel.getContext(),
                 layoutManager.getOrientation());
         listExcel.addItemDecoration(dividerItemDecoration);
-        listExcel.setAdapter(new LightExcelAdapter(getContext(), excelModels));
+        listExcel.setAdapter(new LightExcelAdapter(getActivity(), excelModels));
     }
 
     public void scanItems() {

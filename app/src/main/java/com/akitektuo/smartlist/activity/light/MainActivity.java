@@ -12,17 +12,21 @@ import android.view.inputmethod.InputMethodManager;
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.ViewPagerAdapter;
 import com.akitektuo.smartlist.communicator.FileGenerationNotifier;
+import com.akitektuo.smartlist.communicator.ImportNotifier;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.fragment.FolderFragment;
 import com.akitektuo.smartlist.fragment.ListFragment;
 import com.akitektuo.smartlist.fragment.SettingsFragment;
+import com.akitektuo.smartlist.fragment.StatsFragment;
 import com.akitektuo.smartlist.fragment.TuneFragment;
 
-public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, FileGenerationNotifier {
+public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, FileGenerationNotifier, ImportNotifier {
 
     private ViewPager pager;
     private TabLayout tab;
     private FolderFragment folderFragment;
+    private ListFragment listFragment;
+    private StatsFragment statsFragment;
     private DatabaseHelper database;
 
     @Override
@@ -54,7 +58,10 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     private void setupViewPager() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new ListFragment());
+        listFragment = new ListFragment();
+        adapter.addFragment(listFragment);
+        statsFragment = new StatsFragment();
+        adapter.addFragment(statsFragment);
         folderFragment = new FolderFragment();
         adapter.addFragment(folderFragment);
         adapter.addFragment(new TuneFragment());
@@ -64,9 +71,10 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     private void setupTabIcons() {
         tab.getTabAt(0).setIcon(R.drawable.light_list_selected);
-        tab.getTabAt(1).setIcon(R.drawable.light_folder);
-        tab.getTabAt(2).setIcon(R.drawable.light_tune);
-        tab.getTabAt(3).setIcon(R.drawable.light_settings);
+        tab.getTabAt(1).setIcon(R.drawable.light_chart);
+        tab.getTabAt(2).setIcon(R.drawable.light_folder);
+        tab.getTabAt(3).setIcon(R.drawable.light_tune);
+        tab.getTabAt(4).setIcon(R.drawable.light_settings);
     }
 
     @Override
@@ -77,12 +85,16 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 tab.setIcon(R.drawable.light_list_selected);
                 break;
             case 1:
-                tab.setIcon(R.drawable.light_folder_selected);
+                tab.setIcon(R.drawable.light_chart_selected);
+                statsFragment.animatePie();
                 break;
             case 2:
-                tab.setIcon(R.drawable.light_tune_selected);
+                tab.setIcon(R.drawable.light_folder_selected);
                 break;
             case 3:
+                tab.setIcon(R.drawable.light_tune_selected);
+                break;
+            case 4:
                 tab.setIcon(R.drawable.light_settings_selected);
                 break;
         }
@@ -95,12 +107,15 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 tab.setIcon(R.drawable.light_list);
                 break;
             case 1:
-                tab.setIcon(R.drawable.light_folder);
+                tab.setIcon(R.drawable.light_chart);
                 break;
             case 2:
-                tab.setIcon(R.drawable.light_tune);
+                tab.setIcon(R.drawable.light_folder);
                 break;
             case 3:
+                tab.setIcon(R.drawable.light_tune);
+                break;
+            case 4:
                 tab.setIcon(R.drawable.light_settings);
                 break;
         }
@@ -120,7 +135,13 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     @Override
     public void change() {
-        folderFragment.scanItems();
-        tab.getTabAt(1).select();
+//        folderFragment.scanItems();
+        tab.getTabAt(2).select();
+    }
+
+    @Override
+    public void refreshList() {
+//        listFragment.populateList();
+        tab.getTabAt(0).select();
     }
 }
