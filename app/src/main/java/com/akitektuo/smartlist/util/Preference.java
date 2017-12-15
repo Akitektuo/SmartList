@@ -80,7 +80,7 @@ public class Preference {
         setPreference(KEY_STORAGE, STORAGE_INTERNAL);
         setPreference(KEY_NIGHT, false);
         setPreference(KEY_TOTAL, false);
-        setPreference(KEY_DESIGN, 0);
+        setPreference(KEY_DESIGN, 1);
         setPreference(KEY_TOTAL_COUNT, "0");
         setPreference(KEY_OFFSET, "0");
         setPreference(KEY_OFFSET_UPDATE, false);
