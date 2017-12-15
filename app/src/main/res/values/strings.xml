@@ -7,9 +7,9 @@
     <string name="currency">Currency</string>
     <string name="currency_status">Change the currency of Smart List</string>
     <string name="recommendations">Smart Recommendations</string>
-    <string name="recommendations_status">Give me suggestions when I type an product into the list</string>
+    <string name="recommendations_status">Give me suggestions when I type an products into the list</string>
     <string name="products">Memorised Products</string>
-    <string name="products_status">Remove a product that was memorised after you added it to the list</string>
+    <string name="products_status">Remove a products that was memorised after you added it to the list</string>
     <string name="fill">Smart Fill</string>
     <string name="fill_status">When the price field is empty, type in the price automatically</string>
     <string name="limit">Price Limit</string>
@@ -44,6 +44,7 @@
     <string name="update_offset">Update Offset</string>
     <string name="update_offset_status">Update the offset automatically after the entire list has been deleted</string>
     <string name="manage_categories">Manage Categories</string>
-    <string name="manage_categories_status">Change a product\'s category, add or delete categories</string>
+    <string name="manage_categories_status">Change a products\'s category, add or delete categories</string>
     <string name="category_name">Category name:</string>
+    <string name="statistics">Statistics</string>
 </resources>

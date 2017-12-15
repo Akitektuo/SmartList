@@ -1,5 +1,6 @@
 package com.akitektuo.smartlist.adapter;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.akitektuo.smartlist.R;
+import com.akitektuo.smartlist.communicator.TotalUpdateNotifier;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.model.ListModel;
 import com.akitektuo.smartlist.util.Preference;
@@ -44,15 +46,15 @@ public class LightListAdapter extends RecyclerView.Adapter<LightListAdapter.View
     private Context context;
     private List<ListModel> listModels;
     private DatabaseHelper database;
-    private TextView textTotal;
     private Preference preference;
+    private TotalUpdateNotifier notifierTotal;
 
-    public LightListAdapter(Context context, List<ListModel> listModels, TextView textTotal) {
-        this.context = context;
+    public LightListAdapter(Activity activity, List<ListModel> listModels) {
+        this.context = activity;
         this.listModels = listModels;
-        preference = new Preference(context);
-        database = new DatabaseHelper(context);
-        this.textTotal = textTotal;
+        preference = new Preference(activity);
+        database = new DatabaseHelper(activity);
+        notifierTotal = (TotalUpdateNotifier) activity;
     }
 
     @Override
@@ -113,7 +115,7 @@ public class LightListAdapter extends RecyclerView.Adapter<LightListAdapter.View
                         listModels.remove(holder.getAdapterPosition());
                         updateDatabase(holder.getAdapterPosition());
                         notifyDataSetChanged();
-                        textTotal.setText(context.getString(R.string.total_price, new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT))), preference.getPreferenceString(KEY_CURRENCY)));
+                        notifierTotal.listChanged();
                     }
                 });
                 builderDelete.setNegativeButton("Cancel", null);
@@ -141,17 +143,16 @@ public class LightListAdapter extends RecyclerView.Adapter<LightListAdapter.View
                                 listModels.set(listModels.size() - 1, new ListModel(lastItem, value, preference.getPreferenceString(KEY_CURRENCY), product, 1));
                                 listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
                                 notifyDataSetChanged();
-                                textTotal.setText(context.getString(R.string.total_price, new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT))), preference.getPreferenceString(KEY_CURRENCY)));
                             } else {
                                 database.updateList(holder.getAdapterPosition() + 1, listModel.getNumber(), value, product);
                                 preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT)) + Double.parseDouble(value) - Double.parseDouble(listModels.get(holder.getAdapterPosition()).getValue())));
                                 listModels.set(holder.getAdapterPosition(), new ListModel(listModel.getNumber(), value, preference.getPreferenceString(KEY_CURRENCY), product, 1));
                                 notifyDataSetChanged();
-                                textTotal.setText(context.getString(R.string.total_price, new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT))), preference.getPreferenceString(KEY_CURRENCY)));
                             }
                             database.updatePrices(holder.editAutoProduct.getText().toString(),
                                     holder.editValue.getText().toString());
                             refreshList(holder.editAutoProduct);
+                            notifierTotal.listChanged();
                         }
                     }
                 });

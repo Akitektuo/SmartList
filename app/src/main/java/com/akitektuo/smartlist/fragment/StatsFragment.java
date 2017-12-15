@@ -1,5 +1,6 @@
 package com.akitektuo.smartlist.fragment;
 
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,19 +11,37 @@ import android.view.ViewGroup;
 
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.database.DatabaseHelper;
+import com.akitektuo.smartlist.model.CategoryModel;
+import com.akitektuo.smartlist.model.ItemModel;
+import com.akitektuo.smartlist.model.ProductModel;
 import com.akitektuo.smartlist.util.Preference;
 import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
 import static com.akitektuo.smartlist.util.Constant.KEY_TOTAL_COUNT;
@@ -37,6 +56,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
     private int layoutId;
     private Preference preference;
     private PieChart chartPie;
+    private LineChart chartLineDays;
 
     public StatsFragment() {
         layoutId = R.layout.fragment_stats;
@@ -55,35 +75,9 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
         database = new DatabaseHelper(getContext());
 
         chartPie = getActivity().findViewById(R.id.chart_pie);
-        chartPie.setUsePercentValues(true);
-        chartPie.getDescription().setEnabled(false);
-        chartPie.setRotationEnabled(false);
+        chartLineDays = getActivity().findViewById(R.id.chart_line_days);
 
-        chartPie.setCenterText(new SpannableString("Total Value\n" +
-                new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT)))
-                + "\n" + preference.getPreferenceString(KEY_CURRENCY)));
-
-        chartPie.setDrawHoleEnabled(true);
-        chartPie.setHoleColor(Color.WHITE);
-        chartPie.setTransparentCircleColor(Color.WHITE);
-        chartPie.setTransparentCircleAlpha(110);
-        chartPie.setHoleRadius(58f);
-        chartPie.setTransparentCircleRadius(61f);
-        chartPie.setDrawCenterText(true);
-        chartPie.setRotationAngle(0);
-
-        setData(6, 100);
-
-        animatePie();
-
-        Legend l = chartPie.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
-        l.setOrientation(Legend.LegendOrientation.VERTICAL);
-        l.setDrawInside(false);
-        l.setXEntrySpace(7f);
-        l.setYEntrySpace(0f);
-        l.setYOffset(0f);
+        setData();
     }
 
     @Override
@@ -98,28 +92,78 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
     }
 
-    public void animatePie() {
-        chartPie.animateY(1400, Easing.EasingOption.EaseInOutQuad);
+    public void setData() {
+        Cursor cursorCategories = database.getCategory();
+        List<CategoryModel> categories = new ArrayList<>();
+        if (cursorCategories.moveToFirst()) {
+            do {
+                Cursor cursorProducts = database.getUsageAsc(cursorCategories.getInt(0));
+                if (cursorProducts.moveToFirst()) {
+                    List<ProductModel> products = new ArrayList<>();
+                    do {
+                        Cursor cursorList = database.getListForProduct(cursorProducts.getString(0));
+                        if (cursorList.moveToFirst()) {
+                            List<ItemModel> items = new ArrayList<>();
+                            do {
+                                try {
+                                    items.add(new ItemModel(cursorList.getInt(1), new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault()).parse(cursorList.getString(2))));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                            } while (cursorList.moveToNext());
+                            products.add(new ProductModel(cursorProducts.getString(0), items));
+                        }
+                    } while (cursorProducts.moveToNext());
+                    categories.add(new CategoryModel(cursorCategories.getInt(0), cursorCategories.getString(1), products));
+                }
+            } while (cursorCategories.moveToNext());
+        }
+
+        setDataPie(categories);
+        setDataLineDays(categories);
     }
 
-    private void setData(int count, float range) {
+    private void setDataPie(List<CategoryModel> categories) {
+        chartPie.setUsePercentValues(true);
+        chartPie.getDescription().setEnabled(false);
+        chartPie.setRotationEnabled(false);
 
-        float mult = range;
+        chartPie.setDrawHoleEnabled(true);
+        chartPie.setHoleColor(Color.WHITE);
+        chartPie.setTransparentCircleColor(Color.WHITE);
+        chartPie.setTransparentCircleAlpha(110);
+        chartPie.setHoleRadius(58f);
+        chartPie.setTransparentCircleRadius(61f);
+        chartPie.setDrawCenterText(true);
+        chartPie.setRotationAngle(0);
 
-        String[] mParties = new String[]{
-                "Party A", "Party B", "Party C", "Party D", "Party E", "Party F", "Party G", "Party H",
-                "Party I", "Party J", "Party K", "Party L", "Party M", "Party N", "Party O", "Party P",
-                "Party Q", "Party R", "Party S", "Party T", "Party U", "Party V", "Party W", "Party X",
-                "Party Y", "Party Z"
-        };
+        chartPie.setCenterText(new SpannableString("Total Value\n" +
+                new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT)))
+                + "\n" + preference.getPreferenceString(KEY_CURRENCY)));
+
+        Collections.sort(categories, new Comparator<CategoryModel>() {
+            @Override
+            public int compare(CategoryModel o1, CategoryModel o2) {
+                return Double.compare(o2.getValue(), o1.getValue());
+            }
+        });
 
         ArrayList<PieEntry> entries = new ArrayList<>();
 
-        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
-        // the chart.
-        for (int i = 0; i < count; i++) {
-            entries.add(new PieEntry((float) ((Math.random() * mult) + mult / 5),
-                    mParties[i % mParties.length]));
+        int length = categories.size();
+        if (length > 6) {
+            length = 6;
+        }
+        double totalValue = 0;
+        for (int i = 0; i < length; i++) {
+            if (categories.get(i).getValue() == 0) {
+                length = i;
+                break;
+            }
+            totalValue += categories.get(i).getValue();
+        }
+        for (int i = 0; i < length; i++) {
+            entries.add(new PieEntry((float) (100 * categories.get(i).getValue() / totalValue), categories.get(i).getName()));
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "Costs per category");
@@ -129,8 +173,6 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
         dataSet.setSliceSpace(3f);
         dataSet.setIconsOffset(new MPPointF(0, 40));
         dataSet.setSelectionShift(5f);
-
-        // add a lot of colors
 
         ArrayList<Integer> colors = new ArrayList<>();
 
@@ -152,7 +194,6 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
         colors.add(ColorTemplate.getHoloBlue());
 
         dataSet.setColors(colors);
-        //dataSet.setSelectionShift(0f);
 
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());
@@ -160,10 +201,24 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
         data.setValueTextColor(Color.WHITE);
         chartPie.setData(data);
 
-        // undo all highlights
         chartPie.highlightValues(null);
 
         chartPie.invalidate();
+
+        chartPie.animateY(1400, Easing.EasingOption.EaseInOutQuad);
+
+        Legend l = chartPie.getLegend();
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        l.setOrientation(Legend.LegendOrientation.VERTICAL);
+        l.setDrawInside(false);
+        l.setXEntrySpace(7f);
+        l.setYEntrySpace(0f);
+        l.setYOffset(0f);
+    }
+
+    private void setDataLineDays(List<CategoryModel> categories) {
+
     }
 
 }

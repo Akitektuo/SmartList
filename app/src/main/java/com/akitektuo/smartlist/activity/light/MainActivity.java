@@ -13,6 +13,7 @@ import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.ViewPagerAdapter;
 import com.akitektuo.smartlist.communicator.FileGenerationNotifier;
 import com.akitektuo.smartlist.communicator.ImportNotifier;
+import com.akitektuo.smartlist.communicator.TotalUpdateNotifier;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.fragment.FolderFragment;
 import com.akitektuo.smartlist.fragment.ListFragment;
@@ -20,7 +21,7 @@ import com.akitektuo.smartlist.fragment.SettingsFragment;
 import com.akitektuo.smartlist.fragment.StatsFragment;
 import com.akitektuo.smartlist.fragment.TuneFragment;
 
-public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, FileGenerationNotifier, ImportNotifier {
+public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, FileGenerationNotifier, ImportNotifier, TotalUpdateNotifier {
 
     private ViewPager pager;
     private TabLayout tab;
@@ -86,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 break;
             case 1:
                 tab.setIcon(R.drawable.light_chart_selected);
-                statsFragment.animatePie();
                 break;
             case 2:
                 tab.setIcon(R.drawable.light_folder_selected);
@@ -143,5 +143,11 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     public void refreshList() {
 //        listFragment.populateList();
         tab.getTabAt(0).select();
+    }
+
+    @Override
+    public void listChanged() {
+        statsFragment.setData();
+        listFragment.updateTotal();
     }
 }

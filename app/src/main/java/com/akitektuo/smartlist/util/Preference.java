@@ -70,7 +70,6 @@ public class Preference {
     }
 
     public void setDefault() {
-        setPreference(KEY_CREATED, true);
         setPreference(KEY_CURRENCY, CURRENCY_EUR);
         setPreference(KEY_RECOMMENDATIONS, true);
         setPreference(KEY_AUTO_FILL, true);
@@ -84,5 +83,6 @@ public class Preference {
         setPreference(KEY_TOTAL_COUNT, "0");
         setPreference(KEY_OFFSET, "0");
         setPreference(KEY_OFFSET_UPDATE, false);
+        setPreference(KEY_CREATED, true);
     }
 }

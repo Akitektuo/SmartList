@@ -105,6 +105,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return getReadableDatabase().query(DatabaseContract.ListContractEntry.TABLE_NAME, results, selection, selectionArgs, null, null, null);
     }
 
+    public Cursor getListForProduct(String name) {
+        String[] results = {DatabaseContract.ListContractEntry.COLUMN_NAME_NUMBER,
+                DatabaseContract.ListContractEntry.COLUMN_NAME_VALUE,
+                DatabaseContract.ListContractEntry.COLUMN_NAME_DATE};
+        String selection = DatabaseContract.ListContractEntry.COLUMN_NAME_PRODUCT + " LIKE ?";
+        String[] selectionArgs = {name};
+        return getReadableDatabase().query(DatabaseContract.ListContractEntry.TABLE_NAME, results, selection, selectionArgs, null, null, null);
+    }
+
     public void deleteList(int number) {
         String selection = DatabaseContract.ListContractEntry.COLUMN_NAME_NUMBER + " LIKE ?";
         String[] selectionArgs = {String.valueOf(number)};

@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.LightListAdapter;
 import com.akitektuo.smartlist.communicator.FileGenerationNotifier;
+import com.akitektuo.smartlist.communicator.TotalUpdateNotifier;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.model.ListModel;
 import com.akitektuo.smartlist.util.Preference;
@@ -66,9 +67,10 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
     private int layoutId;
     private Preference preference;
     private Dialog dialogGenerateExcel;
-    private FileGenerationNotifier notifier;
+    private FileGenerationNotifier notifierFiles;
     private Switch switchExcel;
     private AlertDialog.Builder builderOffset;
+    private TotalUpdateNotifier notifierTotal;
 
     public ListFragment() {
         layoutId = R.layout.fragment_list;
@@ -102,7 +104,8 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         switchExcel = dialogGenerateExcel.findViewById(R.id.switch_dialog_light_excel);
         switchExcel.setChecked(preference.getPreferenceBoolean(KEY_TOTAL));
         switchExcel.setOnCheckedChangeListener(this);
-        notifier = (FileGenerationNotifier) getActivity();
+        notifierFiles = (FileGenerationNotifier) getActivity();
+        notifierTotal = (TotalUpdateNotifier) getActivity();
     }
 
     public void populateList() {
@@ -116,9 +119,9 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         }
         cursor.close();
         listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
-        list.setAdapter(new LightListAdapter(getContext(), listModels, textResult));
+        list.setAdapter(new LightListAdapter(getActivity(), listModels));
         list.smoothScrollToPosition(listModels.size() - 1);
-        textResult.setText(getString(R.string.total_price, new DecimalFormat("0.#").format(totalCount), preference.getPreferenceString(KEY_CURRENCY)));
+        updateTotal();
         preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(totalCount));
     }
 
@@ -173,8 +176,9 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
                     preference.setPreference(KEY_OFFSET, String.valueOf(newOffset));
                 }
                 preference.setPreference(KEY_TOTAL_COUNT, "0");
-                textResult.setText(getContext().getString(R.string.total_price, new DecimalFormat("0.#").format(0), preference.getPreferenceString(KEY_CURRENCY)));
+                updateTotal();
                 list.getAdapter().notifyDataSetChanged();
+                notifierTotal.listChanged();
             }
         });
         builderDelete.setNegativeButton("Cancel", null);
@@ -189,6 +193,10 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
                 preference.setPreference(KEY_TOTAL, b);
                 break;
         }
+    }
+
+    public void updateTotal() {
+        textResult.setText(getContext().getString(R.string.total_price, new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT))), preference.getPreferenceString(KEY_CURRENCY)));
     }
 
     private void exportToExcel(Cursor cursor) {
@@ -251,7 +259,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
             e.printStackTrace();
         }
         Toast.makeText(getContext(), "Excel generated", Toast.LENGTH_SHORT).show();
-        notifier.change();
+        notifierFiles.change();
     }
 
     private void showOffsetDialog() {
