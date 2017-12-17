@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     @Override
     public void listChanged() {
-        statsFragment.setData();
+        statsFragment.setDataCharts();
         listFragment.updateTotal();
     }
 }

@@ -14,23 +14,25 @@ import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.model.CategoryModel;
 import com.akitektuo.smartlist.model.ItemModel;
 import com.akitektuo.smartlist.model.ProductModel;
+import com.akitektuo.smartlist.util.BarChartModule;
 import com.akitektuo.smartlist.util.Preference;
 import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IFillFormatter;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 
@@ -40,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,7 +59,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
     private int layoutId;
     private Preference preference;
     private PieChart chartPie;
-    private LineChart chartLineDays;
+    private BarChartModule chartBarDays;
 
     public StatsFragment() {
         layoutId = R.layout.fragment_stats;
@@ -75,9 +78,10 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
         database = new DatabaseHelper(getContext());
 
         chartPie = getActivity().findViewById(R.id.chart_pie);
-        chartLineDays = getActivity().findViewById(R.id.chart_line_days);
 
-        setData();
+        chartBarDays = new BarChartModule((BarChart) getActivity().findViewById(R.id.chart_bar_days), 0);
+
+        setDataCharts();
     }
 
     @Override
@@ -92,7 +96,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
     }
 
-    public void setData() {
+    public void setDataCharts() {
         Cursor cursorCategories = database.getCategory();
         List<CategoryModel> categories = new ArrayList<>();
         if (cursorCategories.moveToFirst()) {
@@ -120,7 +124,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
         }
 
         setDataPie(categories);
-        setDataLineDays(categories);
+        chartBarDays.setData(categories);
     }
 
     private void setDataPie(List<CategoryModel> categories) {
@@ -128,6 +132,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
         chartPie.getDescription().setEnabled(false);
         chartPie.setRotationEnabled(false);
 
+        chartPie.setHighlightPerTapEnabled(false);
         chartPie.setDrawHoleEnabled(true);
         chartPie.setHoleColor(Color.WHITE);
         chartPie.setTransparentCircleColor(Color.WHITE);
@@ -215,10 +220,6 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
         l.setXEntrySpace(7f);
         l.setYEntrySpace(0f);
         l.setYOffset(0f);
-    }
-
-    private void setDataLineDays(List<CategoryModel> categories) {
-
     }
 
 }

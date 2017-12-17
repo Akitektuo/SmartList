@@ -32,8 +32,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="512dp" />
 
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/chart_line_days"
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chart_bar_days"
                 android:layout_width="match_parent"
                 android:layout_height="256dp"/>
 
