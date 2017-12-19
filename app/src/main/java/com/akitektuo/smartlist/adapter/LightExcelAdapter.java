@@ -163,9 +163,9 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
     }
 
     private void importFromExcel(int position) {
-        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "SmartList", excelModels.get(position).getName());
-        WorkbookSettings wbSettings = new WorkbookSettings();
-        wbSettings.setLocale(new Locale("en", "EN"));
+        final File file = new File(Environment.getExternalStorageDirectory() + File.separator + "SmartList", excelModels.get(position).getName());
+        final WorkbookSettings wbSettings = new WorkbookSettings();
+        wbSettings.setLocale(Locale.getDefault());
         try {
             Workbook workbook = Workbook.getWorkbook(file, wbSettings);
             Sheet sheet = workbook.getSheet(0);
@@ -180,12 +180,12 @@ public class LightExcelAdapter extends RecyclerView.Adapter<LightExcelAdapter.Vi
                     date = sheet.getCell(2, i).getContents();
                 }
                 database.addList(database.getListNumberNew(), sheet.getCell(0, i).getContents(), sheet.getCell(1, i).getContents(), date);
+                database.updatePrices(sheet.getCell(1, i).getContents(), sheet.getCell(0, i).getContents());
             }
             importNotifier.refreshList();
         } catch (IOException | BiffException e) {
             e.printStackTrace();
         }
-
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

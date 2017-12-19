@@ -24,6 +24,7 @@ import java.util.List;
 
 import static com.akitektuo.smartlist.util.Constant.KEY_DESIGN;
 import static com.akitektuo.smartlist.util.Constant.KEY_SMART_PRICE;
+import static com.akitektuo.smartlist.util.Constant.KEY_STATS_RANGE;
 
 /**
  * Created by AoD Akitektuo on 30-Aug-17 at 21:13.
@@ -53,6 +54,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
         getActivity().findViewById(R.id.layout_light_products).setOnClickListener(this);
         getActivity().findViewById(R.id.layout_light_limit).setOnClickListener(this);
         getActivity().findViewById(R.id.layout_light_design).setOnClickListener(this);
+        getActivity().findViewById(R.id.layout_light_graph_columns).setOnClickListener(this);
 
         database = new DatabaseHelper(getContext());
     }
@@ -76,6 +78,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.layout_light_design:
                 switchDesign();
+                break;
+            case R.id.layout_light_graph_columns:
+                setGraphColumns();
                 break;
         }
     }
@@ -179,5 +184,70 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private void setGraphColumns() {
+        AlertDialog.Builder builderColumns = new AlertDialog.Builder(getContext());
+        View viewDialog = LayoutInflater.from(getContext()).inflate(R.layout.dialog_light_graph_columns, null);
+        final EditText editColumns = viewDialog.findViewById(R.id.edit_dialog_light_graph_columns);
+        final SeekBar barColumns = viewDialog.findViewById(R.id.bar_light_columns);
+        barColumns.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (b) {
+                    editColumns.setText(String.valueOf(i + 2));
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        barColumns.setProgress(preference.getPreferenceInt(KEY_STATS_RANGE));
+        editColumns.setText(String.valueOf(preference.getPreferenceInt(KEY_STATS_RANGE)));
+        editColumns.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String columnsInput = editable.toString();
+                if (columnsInput.isEmpty()) {
+                    barColumns.setProgress(0);
+                } else if (checkInteger(columnsInput)) {
+                    if (columnsInput.equals("0")) {
+                        barColumns.setProgress(0);
+                    } else if (Integer.parseInt(columnsInput) < 2) {
+                        barColumns.setProgress(0);
+                    } else if (Integer.parseInt(columnsInput) > 31) {
+                        barColumns.setProgress(29);
+                    } else {
+                        barColumns.setProgress(Integer.parseInt(columnsInput) - 2);
+                    }
+                }
+            }
+        });
+        builderColumns.setView(viewDialog);
+        builderColumns.setPositiveButton("Set", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                preference.setPreference(KEY_STATS_RANGE, barColumns.getProgress() + 2);
+            }
+        });
+        builderColumns.setNeutralButton("Cancel", null);
+        builderColumns.show();
     }
 }

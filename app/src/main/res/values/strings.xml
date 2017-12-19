@@ -47,4 +47,9 @@
     <string name="manage_categories_status">Change a products\'s category, add or delete categories</string>
     <string name="category_name">Category name:</string>
     <string name="statistics">Statistics</string>
+    <string name="graph_columns">Graph Columns</string>
+    <string name="graph_columns_status">Select how many columns do you want the bar charts to show</string>
+    <string name="set_no_columns">Set the number of columns</string>
+    <string name="set_no_columns_aware">By default the number is set to 12 so it can illustrate an entire year</string>
+    <string name="columns_set">Columns will be set to:</string>
 </resources>

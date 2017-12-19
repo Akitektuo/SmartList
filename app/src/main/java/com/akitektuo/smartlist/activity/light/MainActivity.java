@@ -141,8 +141,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     @Override
     public void refreshList() {
-//        listFragment.populateList();
         tab.getTabAt(0).select();
+        listFragment.updateTotal();
     }
 
     @Override

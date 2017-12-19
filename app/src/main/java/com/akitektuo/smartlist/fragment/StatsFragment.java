@@ -31,6 +31,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -104,7 +105,9 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
                             List<ItemModel> items = new ArrayList<>();
                             do {
                                 try {
-                                    items.add(new ItemModel(cursorList.getInt(1), new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault()).parse(cursorList.getString(2))));
+                                    Calendar cal = Calendar.getInstance();
+                                    cal.setTime(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault()).parse(cursorList.getString(2)));
+                                    items.add(new ItemModel(Double.parseDouble(cursorList.getString(1)), cal));
                                 } catch (ParseException e) {
                                     e.printStackTrace();
                                 }
@@ -197,7 +200,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 
         colors.add(ColorTemplate.getHoloBlue());
 
-        dataSet.setColors(colors);
+        dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
 
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());

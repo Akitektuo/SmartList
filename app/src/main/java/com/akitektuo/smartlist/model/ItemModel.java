@@ -1,6 +1,6 @@
 package com.akitektuo.smartlist.model;
 
-import java.util.Date;
+import java.util.Calendar;
 
 /**
  * Created by Akitektuo on 15.12.2017.
@@ -8,27 +8,27 @@ import java.util.Date;
 
 public class ItemModel {
 
-    private int value;
-    private Date date;
+    private double value;
+    private Calendar calendar;
 
-    public ItemModel(int value, Date date) {
+    public ItemModel(double value, Calendar calendar) {
         setValue(value);
-        setDate(date);
+        setCalendar(calendar);
     }
 
-    public int getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(double value) {
         this.value = value;
     }
 
-    public Date getDate() {
-        return date;
+    public Calendar getCalendar() {
+        return calendar;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setCalendar(Calendar calendar) {
+        this.calendar = calendar;
     }
 }

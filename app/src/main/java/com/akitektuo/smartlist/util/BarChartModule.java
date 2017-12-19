@@ -3,6 +3,8 @@ package com.akitektuo.smartlist.util;
 import android.content.Context;
 
 import com.akitektuo.smartlist.model.CategoryModel;
+import com.akitektuo.smartlist.model.ItemModel;
+import com.akitektuo.smartlist.model.ProductModel;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
@@ -22,6 +24,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
 import static com.akitektuo.smartlist.util.Constant.KEY_STATS_RANGE;
 
 /**
@@ -44,41 +47,40 @@ public class BarChartModule {
     }
 
     private void initialize() {
-        chart.setDrawBarShadow(false);
-        chart.setDrawValueAboveBar(true);
-        chart.getDescription().setEnabled(false);
-        chart.setMaxVisibleValueCount(12);
-        chart.setHighlightPerTapEnabled(false);
-        chart.setHighlightPerDragEnabled(false);
-        chart.setPinchZoom(true);
-        chart.setDrawGridBackground(false);
+        getChart().setDrawBarShadow(false);
+        getChart().setDrawValueAboveBar(true);
+        getChart().getDescription().setEnabled(false);
+        getChart().setMaxVisibleValueCount(12);
+        getChart().setHighlightPerTapEnabled(false);
+        getChart().setHighlightPerDragEnabled(false);
+        getChart().setPinchZoom(true);
+        getChart().setDrawGridBackground(false);
 
         IAxisValueFormatter xAxisFormatter = new TimeAxisValueFormatter();
 
-        XAxis xAxis = chart.getXAxis();
+        XAxis xAxis = getChart().getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f); // only intervals of 1 day
-        xAxis.setLabelCount(7);
         xAxis.setValueFormatter(xAxisFormatter);
 
         IAxisValueFormatter custom = new MyAxisValueFormatter();
 
-        YAxis leftAxis = chart.getAxisLeft();
+        YAxis leftAxis = getChart().getAxisLeft();
         leftAxis.setLabelCount(8, false);
         leftAxis.setValueFormatter(custom);
         leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
         leftAxis.setSpaceTop(15f);
         leftAxis.setAxisMinimum(0f);
 
-        YAxis rightAxis = chart.getAxisRight();
+        YAxis rightAxis = getChart().getAxisRight();
         rightAxis.setDrawGridLines(false);
         rightAxis.setLabelCount(8, false);
         rightAxis.setValueFormatter(custom);
         rightAxis.setSpaceTop(15f);
         rightAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-        Legend l = chart.getLegend();
+        Legend l = getChart().getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
@@ -92,39 +94,102 @@ public class BarChartModule {
     public void setData(List<CategoryModel> categories) {
         ArrayList<BarEntry> entries = new ArrayList<>();
 
-        entries.add(new BarEntry(1, 15));
-        entries.add(new BarEntry(2, 5));
-        entries.add(new BarEntry(3, 10));
-        entries.add(new BarEntry(4, 10));
-        entries.add(new BarEntry(5, 10));
-        entries.add(new BarEntry(6, 50));
-        entries.add(new BarEntry(7, 10));
-        entries.add(new BarEntry(8, 10));
-        entries.add(new BarEntry(9, 10));
-        entries.add(new BarEntry(10, 10));
+        Calendar calStart = getStartOfDay(Calendar.getInstance());
+        Calendar calEnd = getStartOfDay(Calendar.getInstance());
+        int time = -preference.getPreferenceInt(KEY_STATS_RANGE), type = 5;
+        switch (getType()) {
+            case 0:
+                type = Calendar.DATE;
+                break;
+            case 1:
+                type = Calendar.WEEK_OF_YEAR;
+                break;
+            case 2:
+                type = Calendar.MONTH;
+                break;
+        }
+        calStart.add(type, time);
+        calEnd.add(type, time + 1);
+        double average = 0;
+        boolean startCount = false;
+        int count = 0;
+        for (int i = 1; i <= preference.getPreferenceInt(KEY_STATS_RANGE); i++) {
+            calStart.add(type, 1);
+            calEnd.add(type, 1);
+            double totalValue = 0;
+            for (CategoryModel category : categories) {
+                for (ProductModel product : category.getProducts()) {
+                    for (ItemModel item : product.getItems()) {
+                        if (calStart.before(item.getCalendar()) && calEnd.after(item.getCalendar())) {
+                            totalValue += item.getValue();
+                        }
+                    }
+                }
+            }
+            average += totalValue;
+            if (totalValue > 0) {
+                startCount = true;
+            }
+            if (startCount) {
+                count++;
+            }
+            entries.add(new BarEntry(i, (float) totalValue));
+        }
 
         BarDataSet dataSet;
 
-        if (chart.getData() != null && chart.getData().getDataSetCount() > 0) {
-            dataSet = (BarDataSet) chart.getData().getDataSetByIndex(0);
+        if (getChart().getData() != null && getChart().getData().getDataSetCount() > 0) {
+            dataSet = (BarDataSet) getChart().getData().getDataSetByIndex(0);
             dataSet.setValues(entries);
-            chart.getData().notifyDataChanged();
-            chart.notifyDataSetChanged();
+            getChart().getData().notifyDataChanged();
+            getChart().notifyDataSetChanged();
         } else {
-            dataSet = new BarDataSet(entries, "Last " + preference.getPreferenceInt(KEY_STATS_RANGE) + " days");
+            String label = "Last " + preference.getPreferenceInt(KEY_STATS_RANGE);
+            switch (getType()) {
+                case 0:
+                    label += " days";
+                    break;
+                case 1:
+                    label += " weeks";
+                    break;
+                case 2:
+                    label += " months";
+                    break;
+            }
+            label += " with the average of " + new DecimalFormat("0.##").format(average / count) + " " + preference.getPreferenceString(KEY_CURRENCY);
 
+            dataSet = new BarDataSet(entries, label);
             dataSet.setDrawIcons(false);
-            dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+            switch (getType()) {
+                case 0:
+                    dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
+                    break;
+                case 1:
+                    dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+                    break;
+                case 2:
+                    dataSet.setColors(ColorTemplate.LIBERTY_COLORS);
+                    break;
+            }
+
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<>();
             dataSets.add(dataSet);
 
             BarData data = new BarData(dataSets);
             data.setValueTextSize(10f);
-            data.setBarWidth(0.9f);
+            data.setBarWidth(1f);
 
-            chart.setData(data);
+            getChart().setData(data);
         }
+    }
+
+    private Calendar getStartOfDay(Calendar cal) {
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
     }
 
     public BarChart getChart() {
