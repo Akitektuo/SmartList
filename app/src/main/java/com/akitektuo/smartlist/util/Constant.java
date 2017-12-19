@@ -52,5 +52,6 @@ public class Constant {
     public static final String KEY_TOTAL_COUNT = "total_count";
     public static final String KEY_OFFSET = "offset";
     public static final String KEY_OFFSET_UPDATE = "offset_update";
+    public static final String KEY_STATS_RANGE = "stats_range";
 
 }

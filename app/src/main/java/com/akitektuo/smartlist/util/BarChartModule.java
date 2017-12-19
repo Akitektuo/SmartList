@@ -1,8 +1,9 @@
 package com.akitektuo.smartlist.util;
 
+import android.content.Context;
+
 import com.akitektuo.smartlist.model.CategoryModel;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -17,9 +18,11 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import static com.akitektuo.smartlist.util.Constant.KEY_STATS_RANGE;
 
 /**
  * Created by Akitektuo on 17.12.2017.
@@ -29,10 +32,14 @@ public class BarChartModule {
 
     private BarChart chart;
     private int type;
+    private Context context;
+    private Preference preference;
 
-    public BarChartModule(BarChart chart, int type) {
+    public BarChartModule(Context context, BarChart chart, int type) {
         setChart(chart);
         setType(type);
+        setContext(context);
+        setPreference(new Preference(getContext()));
         initialize();
     }
 
@@ -46,16 +53,7 @@ public class BarChartModule {
         chart.setPinchZoom(true);
         chart.setDrawGridBackground(false);
 
-        IAxisValueFormatter xAxisFormatter = null;
-        switch (getType()) {
-            case 0:
-                xAxisFormatter = new DayAxisValueFormatter();
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-        }
+        IAxisValueFormatter xAxisFormatter = new TimeAxisValueFormatter();
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -99,13 +97,11 @@ public class BarChartModule {
         entries.add(new BarEntry(3, 10));
         entries.add(new BarEntry(4, 10));
         entries.add(new BarEntry(5, 10));
-        entries.add(new BarEntry(6, 10));
+        entries.add(new BarEntry(6, 50));
         entries.add(new BarEntry(7, 10));
         entries.add(new BarEntry(8, 10));
         entries.add(new BarEntry(9, 10));
         entries.add(new BarEntry(10, 10));
-        entries.add(new BarEntry(11, 0));
-        entries.add(new BarEntry(12, 10));
 
         BarDataSet dataSet;
 
@@ -115,7 +111,7 @@ public class BarChartModule {
             chart.getData().notifyDataChanged();
             chart.notifyDataSetChanged();
         } else {
-            dataSet = new BarDataSet(entries, "Last 12 days");
+            dataSet = new BarDataSet(entries, "Last " + preference.getPreferenceInt(KEY_STATS_RANGE) + " days");
 
             dataSet.setDrawIcons(false);
             dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
@@ -147,40 +143,46 @@ public class BarChartModule {
         this.type = type;
     }
 
-    public class DayAxisValueFormatter implements IAxisValueFormatter {
-
-        @Override
-        public String getFormattedValue(float value, AxisBase axis) {
-            int days = (int) value;
-            return new SimpleDateFormat("d MMM", Locale.getDefault()).format(new Date(new Date().getTime() + getTimeForDays(days - 12)));
-        }
-
-        private long getTimeForDays(int days) {
-            return days * 1000 * 60 * 60 * 24;
-        }
+    public Context getContext() {
+        return context;
     }
 
-    public class MonthAxisValueFormatter implements IAxisValueFormatter {
+    public void setContext(Context context) {
+        this.context = context;
+    }
 
-        protected String[] mMonths = new String[]{
-                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-        };
+    public Preference getPreference() {
+        return preference;
+    }
 
-        private BarLineChartBase<?> chart;
+    public void setPreference(Preference preference) {
+        this.preference = preference;
+    }
 
-        public MonthAxisValueFormatter(BarLineChartBase<?> chart) {
-            this.chart = chart;
-        }
+    public class TimeAxisValueFormatter implements IAxisValueFormatter {
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            int months = (int) value;
-            return new SimpleDateFormat("MMM yyy", Locale.getDefault()).format(new Date(new Date().getTime() + getTimeForMonths(months - 12)));
+            int time = (int) value - preference.getPreferenceInt(KEY_STATS_RANGE);
+            String format = "";
+            Calendar cal = Calendar.getInstance();
+            switch (getType()) {
+                case 0:
+                    cal.add(Calendar.DATE, time);
+                    format = new SimpleDateFormat("d MMM", Locale.getDefault()).format(cal.getTime());
+                    break;
+                case 1:
+                    cal.add(Calendar.WEEK_OF_YEAR, time);
+                    format = new SimpleDateFormat("w yyyy", Locale.getDefault()).format(cal.getTime());
+                    break;
+                case 2:
+                    cal.add(Calendar.MONTH, time);
+                    format = new SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(cal.getTime());
+                    break;
+            }
+            return format;
         }
 
-        private long getTimeForMonths(int months) {
-            return months * 4 * 7 * 1000 * 60 * 60 * 24;
-        }
     }
 
     public class MyAxisValueFormatter implements IAxisValueFormatter {

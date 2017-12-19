@@ -18,21 +18,12 @@ import com.akitektuo.smartlist.util.BarChartModule;
 import com.akitektuo.smartlist.util.Preference;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 
@@ -42,7 +33,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -60,6 +50,8 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
     private Preference preference;
     private PieChart chartPie;
     private BarChartModule chartBarDays;
+    private BarChartModule chartBarWeeks;
+    private BarChartModule chartBarMonths;
 
     public StatsFragment() {
         layoutId = R.layout.fragment_stats;
@@ -79,7 +71,9 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
 
         chartPie = getActivity().findViewById(R.id.chart_pie);
 
-        chartBarDays = new BarChartModule((BarChart) getActivity().findViewById(R.id.chart_bar_days), 0);
+        chartBarDays = new BarChartModule(getContext(), (BarChart) getActivity().findViewById(R.id.chart_bar_days), 0);
+        chartBarWeeks = new BarChartModule(getContext(), (BarChart) getActivity().findViewById(R.id.chart_bar_weeks), 1);
+        chartBarMonths = new BarChartModule(getContext(), (BarChart) getActivity().findViewById(R.id.chart_bar_months), 2);
 
         setDataCharts();
     }
@@ -117,14 +111,19 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
                             } while (cursorList.moveToNext());
                             products.add(new ProductModel(cursorProducts.getString(0), items));
                         }
+                        cursorList.close();
                     } while (cursorProducts.moveToNext());
                     categories.add(new CategoryModel(cursorCategories.getInt(0), cursorCategories.getString(1), products));
                 }
+                cursorProducts.close();
             } while (cursorCategories.moveToNext());
         }
+        cursorCategories.close();
 
         setDataPie(categories);
         chartBarDays.setData(categories);
+        chartBarWeeks.setData(categories);
+        chartBarMonths.setData(categories);
     }
 
     private void setDataPie(List<CategoryModel> categories) {

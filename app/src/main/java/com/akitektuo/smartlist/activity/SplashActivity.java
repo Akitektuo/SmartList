@@ -11,6 +11,7 @@ import com.akitektuo.smartlist.util.Preference;
 
 import static com.akitektuo.smartlist.util.Constant.KEY_CREATED;
 import static com.akitektuo.smartlist.util.Constant.KEY_DESIGN;
+import static com.akitektuo.smartlist.util.Constant.KEY_STATS_RANGE;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -21,6 +22,9 @@ public class SplashActivity extends AppCompatActivity {
         Preference preference = new Preference(this);
         if (!preference.getPreferenceBoolean(KEY_CREATED)) {
             preference.setDefault();
+        }
+        if (preference.getPreferenceInt(KEY_STATS_RANGE) == 0) {
+            preference.setPreference(KEY_STATS_RANGE, 12);
         }
         if (preference.getPreferenceInt(KEY_DESIGN) == 0) {
             startActivity(new Intent(this, ListActivity.class));
