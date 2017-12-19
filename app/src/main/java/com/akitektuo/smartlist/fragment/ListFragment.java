@@ -2,10 +2,13 @@ package com.akitektuo.smartlist.fragment;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
+import android.speech.RecognizerIntent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -47,6 +50,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
+import static android.app.Activity.RESULT_OK;
 import static com.akitektuo.smartlist.util.Constant.KEY_CURRENCY;
 import static com.akitektuo.smartlist.util.Constant.KEY_OFFSET;
 import static com.akitektuo.smartlist.util.Constant.KEY_OFFSET_UPDATE;
@@ -95,6 +99,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         listModels = new ArrayList<>();
         getActivity().findViewById(R.id.button_light_delete_all).setOnClickListener(this);
         getActivity().findViewById(R.id.button_light_excel_generate).setOnClickListener(this);
+        getActivity().findViewById(R.id.button_light_voice).setOnClickListener(this);
         getActivity().findViewById(R.id.layout_list_total).setOnClickListener(this);
         populateList();
         dialogGenerateExcel = new Dialog(getContext());
@@ -152,6 +157,9 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
             case R.id.layout_list_total:
                 showOffsetDialog();
                 break;
+            case R.id.button_light_voice:
+                promptSpeechInput();
+                break;
         }
     }
 
@@ -196,7 +204,13 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
     }
 
     public void updateTotal() {
-        textResult.setText(getContext().getString(R.string.total_price, new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT))), preference.getPreferenceString(KEY_CURRENCY)));
+        try {
+            textResult.setText(getContext().getString(R.string.total_price, new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT))), preference.getPreferenceString(KEY_CURRENCY)));
+        } catch (Exception e) {
+            e.printStackTrace();
+            preference.setPreference(KEY_TOTAL_COUNT, "0");
+            updateTotal();
+        }
     }
 
     private void exportToExcel(Cursor cursor) {
@@ -323,4 +337,55 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         builderOffset.show();
     }
 
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say \"[Product] costs [number]\"");
+        try {
+            startActivityForResult(intent, 100);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(getContext(), "Speech not supported on this device", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 100:
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    String rec = result.get(0);
+                    String[] res;
+                    if (rec.contains(" costs ")) {
+                        res = rec.split(" costs ");
+                    } else if (rec.contains(" cost ")) {
+                        res = rec.split(" cost ");
+                    } else {
+                        Toast.makeText(getContext(), "Invalid voice input, follow the pattern", Toast.LENGTH_SHORT).show();
+                        promptSpeechInput();
+                        return;
+                    }
+                    String product = res[0], price = res[1];
+                    try {
+                        Double.parseDouble(price);
+                        database.addList(database.getListNumberNew(), price, product, new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault()).format(new Date()));
+                        database.updatePrices(product, price);
+                        listModels.set(listModels.size() - 1, new ListModel(listModels.size(), price, preference.getPreferenceString(KEY_CURRENCY), product, 1));
+                        listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
+                        list.getAdapter().notifyDataSetChanged();
+                        preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(Double.valueOf(preference.getPreferenceString(KEY_TOTAL_COUNT)) + Double.valueOf(price)));
+                        updateTotal();
+                        notifierTotal.listChanged();
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), "The price is not a number", Toast.LENGTH_SHORT).show();
+                        promptSpeechInput();
+                        return;
+                    }
+                }
+                break;
+        }
+
+    }
 }
