@@ -73,7 +73,6 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
     private Dialog dialogGenerateExcel;
     private FileGenerationNotifier notifierFiles;
     private Switch switchExcel;
-    private AlertDialog.Builder builderOffset;
     private TotalUpdateNotifier notifierTotal;
 
     public ListFragment() {
@@ -277,7 +276,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
     }
 
     private void showOffsetDialog() {
-        builderOffset = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builderOffset = new AlertDialog.Builder(getContext());
         View viewDialog = LayoutInflater.from(getContext()).inflate(R.layout.dialog_light_offset, null);
         builderOffset.setView(viewDialog);
         final EditText editOffset = viewDialog.findViewById(R.id.edit_dialog_light_limit);
@@ -388,4 +387,5 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         }
 
     }
+
 }
