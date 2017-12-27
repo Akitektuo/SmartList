@@ -191,7 +191,7 @@ public class BarChartModule {
         cal.set(Calendar.MILLISECOND, 0);
         switch (getType()) {
             case 1:
-                cal.set(Calendar.DAY_OF_WEEK, 0);
+                cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                 break;
             case 2:
                 cal.set(Calendar.DAY_OF_MONTH, 0);
