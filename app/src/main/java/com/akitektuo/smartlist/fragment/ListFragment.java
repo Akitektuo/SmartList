@@ -304,6 +304,16 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
                 preference.setPreference(KEY_OFFSET_UPDATE, b);
             }
         });
+        try {
+            Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT));
+        } catch (Exception e) {
+            preference.setPreference(KEY_TOTAL_COUNT, "0");
+        }
+        try {
+            Double.parseDouble(preference.getPreferenceString(KEY_OFFSET));
+        } catch (Exception e) {
+            preference.setPreference(KEY_OFFSET, "0");
+        }
         textTotalOffset.setText(getString(R.string.total_price_with_offset, new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT)) + Double.parseDouble(preference.getPreferenceString(KEY_OFFSET))), preference.getPreferenceString(KEY_CURRENCY)));
         editOffset.setText(new DecimalFormat("0.#").format(Double.parseDouble(preference.getPreferenceString(KEY_OFFSET))));
         editOffset.addTextChangedListener(new TextWatcher() {
