@@ -93,13 +93,15 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     private void removeProduct() {
         AlertDialog.Builder builderRecommendations = new AlertDialog.Builder(getContext());
-        builderRecommendations.setTitle("Select product to delete");
-        List<String> listProducts = new ArrayList<>();
+        final List<String> listProducts = new ArrayList<>();
         Cursor cursorProducts = database.getUsage();
         if (cursorProducts.moveToFirst()) {
             do {
                 listProducts.add(cursorProducts.getString(0));
             } while (cursorProducts.moveToNext());
+            builderRecommendations.setTitle("Select product to delete");
+        } else {
+            builderRecommendations.setTitle("No product found");
         }
         final String[] arrayProducts = listProducts.toArray(new String[listProducts.size()]);
         builderRecommendations.setItems(arrayProducts, new DialogInterface.OnClickListener() {
@@ -109,6 +111,16 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
             }
         });
         builderRecommendations.setNeutralButton("Cancel", null);
+        if (listProducts.size() > 1) {
+            builderRecommendations.setPositiveButton("Delete all", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    for (String x : listProducts) {
+                        database.deleteUsage(x);
+                    }
+                }
+            });
+        }
         AlertDialog alertDialogRecommendations = builderRecommendations.create();
         alertDialogRecommendations.show();
     }

@@ -229,7 +229,11 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
                 cursor.close();
                 final List<Integer> selectedItems = new ArrayList<>();
                 final AlertDialog.Builder builderProducts = new AlertDialog.Builder(getContext());
-                builderProducts.setTitle("Select products to move");
+                if (listProducts.size() == 0) {
+                    builderProducts.setTitle("No products found");
+                } else {
+                    builderProducts.setTitle("Select products to move");
+                }
                 builderProducts.setMultiChoiceItems(listProducts.toArray(new String[0]), null, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i, boolean b) {
@@ -241,34 +245,42 @@ public class TuneFragment extends Fragment implements CompoundButton.OnCheckedCh
                     }
                 });
                 builderProducts.setNeutralButton("Cancel", null);
-                builderProducts.setPositiveButton("Move", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                if (listProducts.size() == 0) {
+                    builderProducts.setTitle("No products found");
+                } else {
+                    builderProducts.setTitle("Select products to move");
+                    builderProducts.setPositiveButton("Move", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if (selectedItems.size() != 0) {
 
-                        // Dialog to select target
-                        AlertDialog.Builder builderCurrency = new AlertDialog.Builder(getContext());
-                        builderCurrency.setTitle("Move to category");
-                        builderCurrency.setItems(listCategories.toArray(new String[0]), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Cursor cursor = database.getCategory(listCategories.get(i));
-                                int categoryId = 0;
-                                if (cursor.moveToFirst()) {
-                                    categoryId = cursor.getInt(0);
-                                }
-                                cursor.close();
-                                for (int x : selectedItems) {
-                                    database.updateUsage(listProducts.get(x), categoryId);
-                                }
-                                Toast.makeText(getContext(), "Product(s) moved", Toast.LENGTH_SHORT).show();
+                                // Dialog to select target
+                                AlertDialog.Builder builderCurrency = new AlertDialog.Builder(getContext());
+                                builderCurrency.setTitle("Move to category");
+                                listCategories.remove(position);
+                                builderCurrency.setItems(listCategories.toArray(new String[0]), new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Cursor cursor = database.getCategory(listCategories.get(i));
+                                        int categoryId = 0;
+                                        if (cursor.moveToFirst()) {
+                                            categoryId = cursor.getInt(0);
+                                        }
+                                        cursor.close();
+                                        for (int x : selectedItems) {
+                                            database.updateUsage(listProducts.get(x), categoryId);
+                                        }
+                                        Toast.makeText(getContext(), "Product(s) moved", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                builderCurrency.setNeutralButton("Cancel", null);
+                                AlertDialog alertDialogCurrency = builderCurrency.create();
+                                alertDialogCurrency.show();
                             }
-                        });
-                        builderCurrency.setNeutralButton("Cancel", null);
-                        AlertDialog alertDialogCurrency = builderCurrency.create();
-                        alertDialogCurrency.show();
-
-                    }
-                }).setNegativeButton("Edit", new DialogInterface.OnClickListener() {
+                        }
+                    });
+                }
+                builderProducts.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
