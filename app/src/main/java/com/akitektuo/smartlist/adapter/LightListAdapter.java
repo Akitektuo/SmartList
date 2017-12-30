@@ -25,7 +25,6 @@ import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.model.ListModel;
 import com.akitektuo.smartlist.util.Preference;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -112,10 +111,8 @@ public class LightListAdapter extends RecyclerView.Adapter<LightListAdapter.View
                     public void onClick(DialogInterface dialogInterface, int i) {
                         preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT)) - Double.parseDouble(listModels.get(holder.getAdapterPosition()).getValue())));
                         database.deleteList(holder.getAdapterPosition() + 1);
-                        listModels.remove(holder.getAdapterPosition());
-                        updateDatabase(holder.getAdapterPosition());
-                        notifyDataSetChanged();
-                        notifierTotal.listChanged();
+                        updateDatabase(remove(holder.getAdapterPosition()));
+                        notifierTotal.listChanged(false);
                     }
                 });
                 builderDelete.setNegativeButton("Cancel", null);
@@ -130,6 +127,8 @@ public class LightListAdapter extends RecyclerView.Adapter<LightListAdapter.View
                 holder.buttonSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        holder.editAutoProduct.clearFocus();
+                        holder.editValue.clearFocus();
                         if (holder.editValue.getText().toString().isEmpty() || holder.editAutoProduct.getText().toString().isEmpty()) {
                             Toast.makeText(context, "Fill in all fields.", Toast.LENGTH_SHORT).show();
                         } else {
@@ -137,22 +136,19 @@ public class LightListAdapter extends RecyclerView.Adapter<LightListAdapter.View
                             String value = holder.editValue.getText().toString();
                             String product = holder.editAutoProduct.getText().toString();
                             if (holder.getAdapterPosition() + 1 == lastItem) {
-                                database.addList(lastItem, value, product,
-                                        new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date()));
+                                database.addList(lastItem, value, product, new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date()));
                                 preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT)) + Double.parseDouble(value)));
-                                listModels.set(listModels.size() - 1, new ListModel(lastItem, value, preference.getPreferenceString(KEY_CURRENCY), product, 1));
-                                listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
-                                notifyDataSetChanged();
+                                insert(listModels.size(), lastItem, value, product);
+                                notifierTotal.listChanged(true);
                             } else {
                                 database.updateList(holder.getAdapterPosition() + 1, listModel.getNumber(), value, product);
                                 preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(Double.parseDouble(preference.getPreferenceString(KEY_TOTAL_COUNT)) + Double.parseDouble(value) - Double.parseDouble(listModels.get(holder.getAdapterPosition()).getValue())));
-                                listModels.set(holder.getAdapterPosition(), new ListModel(listModel.getNumber(), value, preference.getPreferenceString(KEY_CURRENCY), product, 1));
-                                notifyDataSetChanged();
+                                change(holder.getAdapterPosition(), listModel.getNumber(), value, product);
+                                notifierTotal.listChanged(false);
                             }
                             database.updatePrices(holder.editAutoProduct.getText().toString(),
                                     holder.editValue.getText().toString());
                             refreshList(holder.editAutoProduct);
-                            notifierTotal.listChanged();
                         }
                     }
                 });
@@ -215,7 +211,7 @@ public class LightListAdapter extends RecyclerView.Adapter<LightListAdapter.View
             ListModel listModel = listModels.get(i);
             listModel.decrementNumber();
             database.updateList(i + 2, listModel.getNumber(), listModel.getValue(), listModel.getProduct());
-            listModels.set(i, listModel);
+            change(i, listModel);
         }
     }
 
@@ -241,6 +237,28 @@ public class LightListAdapter extends RecyclerView.Adapter<LightListAdapter.View
     @Override
     public int getItemCount() {
         return listModels.size();
+    }
+
+    public int remove(int position) {
+        listModels.remove(position);
+        notifyItemRemoved(position);
+        return position;
+    }
+
+    public void insert(int position, int number, String value, String product) {
+        change(position - 1, number, value, product);
+        listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
+        notifyItemInserted(position);
+    }
+
+    public void change(int position, int number, String value, String product) {
+        listModels.set(position, new ListModel(number, value, preference.getPreferenceString(KEY_CURRENCY), product, 1));
+        notifyItemChanged(position);
+    }
+
+    public void change(int position, ListModel model) {
+        listModels.set(position, model);
+        notifyItemChanged(position);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

@@ -146,8 +146,11 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     }
 
     @Override
-    public void listChanged() {
+    public void listChanged(boolean isInsertion) {
         statsFragment.setDataCharts();
         listFragment.updateTotal();
+        if (isInsertion) {
+            listFragment.goToLastItem();
+        }
     }
 }

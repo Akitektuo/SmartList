@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -43,6 +44,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.OvershootInLeftAnimator;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.Label;
@@ -66,6 +69,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
 
     private DatabaseHelper database;
     private RecyclerView list;
+    private LightListAdapter listAdapter;
     private TextView textResult;
     private List<ListModel> listModels;
     private int layoutId;
@@ -94,8 +98,11 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setStackFromEnd(true);
         list.setLayoutManager(linearLayoutManager);
+        list.setItemAnimator(new OvershootInLeftAnimator());
         textResult = getActivity().findViewById(R.id.text_light_result);
         listModels = new ArrayList<>();
+        listAdapter = new LightListAdapter(getActivity(), listModels);
+        list.setAdapter(new AlphaInAnimationAdapter(listAdapter));
         getActivity().findViewById(R.id.button_light_delete_all).setOnClickListener(this);
         getActivity().findViewById(R.id.button_light_excel_generate).setOnClickListener(this);
         getActivity().findViewById(R.id.button_light_voice).setOnClickListener(this);
@@ -123,7 +130,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
         }
         cursor.close();
         listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
-        list.setAdapter(new LightListAdapter(getActivity(), listModels));
+        listAdapter.notifyDataSetChanged();
         list.smoothScrollToPosition(listModels.size() - 1);
         updateTotal();
         preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(totalCount));
@@ -185,7 +192,7 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
                 preference.setPreference(KEY_TOTAL_COUNT, "0");
                 updateTotal();
                 list.getAdapter().notifyDataSetChanged();
-                notifierTotal.listChanged();
+                notifierTotal.listChanged(false);
             }
         });
         builderDelete.setNegativeButton("Cancel", null);
@@ -371,12 +378,10 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
                         Double.parseDouble(price);
                         database.addList(database.getListNumberNew(), price, product, new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault()).format(new Date()));
                         database.updatePrices(product, price);
-                        listModels.set(listModels.size() - 1, new ListModel(listModels.size(), price, preference.getPreferenceString(KEY_CURRENCY), product, 1));
-                        listModels.add(new ListModel(listModels.size() + 1, "", preference.getPreferenceString(KEY_CURRENCY), "", 0));
-                        list.getAdapter().notifyDataSetChanged();
+                        listAdapter.insert(listModels.size(), listModels.size(), price, product);
                         preference.setPreference(KEY_TOTAL_COUNT, String.valueOf(Double.valueOf(preference.getPreferenceString(KEY_TOTAL_COUNT)) + Double.valueOf(price)));
                         updateTotal();
-                        notifierTotal.listChanged();
+                        notifierTotal.listChanged(true);
                     } catch (Exception e) {
                         Toast.makeText(getContext(), "The price is not a number", Toast.LENGTH_SHORT).show();
                         promptSpeechInput();
@@ -385,7 +390,15 @@ public class ListFragment extends Fragment implements View.OnClickListener, Comp
                 }
                 break;
         }
+    }
 
+    public void goToLastItem() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                list.smoothScrollToPosition(listAdapter.getItemCount() - 1);
+            }
+        }, 100);
     }
 
 }

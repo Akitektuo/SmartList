@@ -6,6 +6,6 @@ package com.akitektuo.smartlist.communicator;
 
 public interface TotalUpdateNotifier {
 
-    void listChanged();
+    void listChanged(boolean isInsertion);
 
 }

@@ -2,6 +2,7 @@ package com.akitektuo.smartlist.util;
 
 import android.content.Context;
 
+import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.model.CategoryModel;
 import com.akitektuo.smartlist.model.ItemModel;
 import com.akitektuo.smartlist.model.ProductModel;
@@ -15,7 +16,6 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -160,25 +160,14 @@ public class BarChartModule {
 
             dataSet = new BarDataSet(entries, label);
             dataSet.setDrawIcons(false);
-            switch (getType()) {
-                case 0:
-                    dataSet.setColors(ColorTemplate.JOYFUL_COLORS);
-                    break;
-                case 1:
-                    dataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
-                    break;
-                case 2:
-                    dataSet.setColors(ColorTemplate.LIBERTY_COLORS);
-                    break;
-            }
-
+            dataSet.setColor(getContext().getResources().getColor(R.color.colorLight));
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<>();
             dataSets.add(dataSet);
 
             BarData data = new BarData(dataSets);
             data.setValueTextSize(10f);
-            data.setBarWidth(1f);
+            data.setBarWidth(0.9f);
 
             getChart().setData(data);
         }
