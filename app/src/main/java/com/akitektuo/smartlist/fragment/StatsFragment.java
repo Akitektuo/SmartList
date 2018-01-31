@@ -91,7 +91,7 @@ public class StatsFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
     }
 
-    public void setDataCharts() {
+    private void setDataCharts() {
         Cursor cursorCategories = database.getCategory();
         List<CategoryModel> categories = new ArrayList<>();
         if (cursorCategories.moveToFirst()) {
