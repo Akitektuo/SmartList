@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
     defaultConfig {
         applicationId 'com.akitektuo.smartlistv1'
-        minSdkVersion 19
-        targetSdkVersion 28
+        minSdk 21
+        compileSdk 34
+        targetSdkVersion 34
         versionCode 20
         versionName "1.20.31012018"
     }
@@ -15,8 +15,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    buildFeatures {
+        buildConfig true
+    }
     productFlavors {
     }
+    namespace 'com.akitektuo.smartlist'
 }
 
 dependencies {
@@ -24,9 +28,9 @@ dependencies {
     api files('libs/jxl.jar')
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
-    implementation 'com.kyleduo.switchbutton:library:1.4.5'
+    implementation 'com.kyleduo.switchbutton:library:2.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'jp.wasabeef:recyclerview-animators:2.2.7'
+    implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 }
