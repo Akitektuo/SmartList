@@ -3,11 +3,11 @@ package com.akitektuo.smartlist.activity.light;
 import android.Manifest;
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.viewpager.widget.ViewPager;
 
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.ViewPagerAdapter;
@@ -20,6 +20,7 @@ import com.akitektuo.smartlist.fragment.ListFragment;
 import com.akitektuo.smartlist.fragment.SettingsFragment;
 import com.akitektuo.smartlist.fragment.StatsFragment;
 import com.akitektuo.smartlist.fragment.TuneFragment;
+import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, FileGenerationNotifier, ImportNotifier, TotalUpdateNotifier {
 

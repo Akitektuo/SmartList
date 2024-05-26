@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SmartList.iml" filepath="$PROJECT_DIR$/SmartList.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/jxl/jxl.iml" filepath="$PROJECT_DIR$/jxl/jxl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/SmartList.iml" filepath="$PROJECT_DIR$/.idea/SmartList.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/SmartList.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/SmartList.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jxl/SmartList.jxl.iml" filepath="$PROJECT_DIR$/.idea/modules/jxl/SmartList.jxl.iml" />
     </modules>
   </component>
 </project>

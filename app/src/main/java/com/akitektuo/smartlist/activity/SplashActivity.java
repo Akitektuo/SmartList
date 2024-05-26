@@ -2,7 +2,8 @@ package com.akitektuo.smartlist.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.activity.light.MainActivity;

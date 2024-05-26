@@ -3,11 +3,12 @@ package com.akitektuo.smartlist.fragment;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
 
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.database.DatabaseHelper;

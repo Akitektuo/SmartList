@@ -10,12 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -27,6 +21,12 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.akitektuo.smartlist.R;
 import com.akitektuo.smartlist.adapter.LightListAdapter;
 import com.akitektuo.smartlist.communicator.FileGenerationNotifier;
@@ -34,6 +34,7 @@ import com.akitektuo.smartlist.communicator.TotalUpdateNotifier;
 import com.akitektuo.smartlist.database.DatabaseHelper;
 import com.akitektuo.smartlist.model.ListModel;
 import com.akitektuo.smartlist.util.Preference;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.IOException;
