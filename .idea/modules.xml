@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/SmartList.iml" filepath="$PROJECT_DIR$/.idea/SmartList.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SmartList.iml" filepath="$PROJECT_DIR$/.idea/modules/SmartList.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/SmartList.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/SmartList.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/SmartList.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/SmartList.app.androidTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/SmartList.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/SmartList.app.main.iml" />

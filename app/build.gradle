@@ -4,10 +4,10 @@ android {
     defaultConfig {
         applicationId 'com.akitektuo.smartlistv1'
         minSdk 21
-        compileSdk 34
-        targetSdkVersion 34
-        versionCode 21
-        versionName "1.21.26052024"
+        compileSdk 35
+        targetSdkVersion 35
+        versionCode 22
+        versionName "1.22.23022025"
     }
     buildTypes {
         release {
@@ -26,11 +26,11 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     api files('libs/jxl.jar')
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'com.kyleduo.switchbutton:library:2.1.0'
-    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
     implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 }
